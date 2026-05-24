@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CICC Web-dev 授業議事録</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif; background: #f5f5f7; color: #1d1d1f; }
+
+/* ── ヘッダー ── */
+header { background: #1d1d1f; color: #fff; padding: 28px 36px 24px; }
+header h1 { font-size: 20px; font-weight: 700; }
+header p { margin-top: 4px; font-size: 12px; color: #888; }
+
+/* ── コントロール ── */
+.controls { padding: 20px 36px 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.search-box { flex: 1; min-width: 180px; max-width: 320px; padding: 8px 13px; border: 1.5px solid #d2d2d7; border-radius: 9px; font-size: 13px; background: #fff; outline: none; }
+.search-box:focus { border-color: #555; }
+.filter-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+.filter-btn { padding: 6px 13px; border: 1.5px solid #d2d2d7; border-radius: 20px; font-size: 11px; font-weight: 600; background: #fff; cursor: pointer; color: #555; transition: all .15s; }
+.filter-btn:hover { border-color: #888; }
+.filter-btn.active { background: #1d1d1f; color: #fff; border-color: #1d1d1f; }
+.count { font-size: 12px; color: #999; margin-left: auto; }
+
+/* ── カードグリッド ── */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; padding: 20px 36px 40px; }
+.card { background: #fff; border-radius: 13px; padding: 20px 22px; box-shadow: 0 1px 4px rgba(0,0,0,.07); cursor: pointer; transition: transform .15s, box-shadow .15s; border: 1.5px solid transparent; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.1); border-color: #e0e0e0; }
+.card[data-hidden="true"] { display: none; }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.date-badge { font-size: 11px; font-weight: 700; color: #fff; padding: 3px 10px; border-radius: 20px; }
+.week-badge { font-size: 10px; color: #888; background: #f5f5f7; padding: 3px 8px; border-radius: 20px; }
+.card h2 { font-size: 14px; font-weight: 700; line-height: 1.45; margin-bottom: 8px; }
+.card .desc { font-size: 12px; color: #666; line-height: 1.6; margin-bottom: 12px; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-size: 10px; font-weight: 500; background: #f5f5f7; color: #666; padding: 2px 8px; border-radius: 5px; }
+.no-results { grid-column: 1/-1; text-align: center; padding: 60px 0; color: #aaa; font-size: 14px; }
+.w1 { background: #3a7bfd; }
+.w2 { background: #34c759; }
+.w3 { background: #ff9f0a; }
+
+/* ── モーダル ── */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 100; }
+.overlay.open { display: block; }
+.modal { position: fixed; top: 0; right: 0; bottom: 0; width: min(720px, 100%); background: #fff; overflow-y: auto; z-index: 101; transform: translateX(100%); transition: transform .25s cubic-bezier(.4,0,.2,1); box-shadow: -4px 0 24px rgba(0,0,0,.12); }
+.modal.open { transform: translateX(0); }
+.modal-header { position: sticky; top: 0; background: #fff; border-bottom: 1px solid #ebebeb; padding: 16px 24px; display: flex; align-items: center; gap: 12px; z-index: 10; }
+.modal-date { font-size: 11px; font-weight: 700; color: #fff; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+.modal-title { font-size: 14px; font-weight: 700; flex: 1; }
+.close-btn { background: #f5f5f7; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: #555; flex-shrink: 0; }
+.close-btn:hover { background: #e5e5e7; }
+.modal-body { padding: 28px 32px 48px; }
+
+/* ── Markdown スタイル ── */
+.modal-body h1 { display: none; }
+.modal-body h2 { font-size: 17px; font-weight: 700; margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #f0f0f0; color: #1d1d1f; }
+.modal-body h3 { font-size: 14px; font-weight: 700; margin: 20px 0 8px; color: #333; }
+.modal-body p { font-size: 13.5px; line-height: 1.75; margin-bottom: 10px; color: #333; }
+.modal-body ul, .modal-body ol { padding-left: 20px; margin-bottom: 12px; }
+.modal-body li { font-size: 13.5px; line-height: 1.75; color: #333; margin-bottom: 2px; }
+.modal-body strong { color: #1d1d1f; }
+.modal-body code { background: #f5f5f7; padding: 2px 6px; border-radius: 4px; font-family: "SF Mono", Consolas, monospace; font-size: 12px; color: #d63384; }
+.modal-body pre { background: #1d1d1f; border-radius: 10px; padding: 16px 18px; margin: 12px 0 16px; overflow-x: auto; }
+.modal-body pre code { background: none; padding: 0; color: #e5e5e5; font-size: 12px; }
+.modal-body table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 12.5px; }
+.modal-body th { background: #f5f5f7; font-weight: 700; padding: 8px 12px; text-align: left; border: 1px solid #e0e0e0; }
+.modal-body td { padding: 7px 12px; border: 1px solid #e8e8e8; vertical-align: top; }
+.modal-body tr:nth-child(even) td { background: #fafafa; }
+.modal-body blockquote { border-left: 3px solid #3a7bfd; padding: 8px 14px; background: #f0f5ff; border-radius: 0 6px 6px 0; margin: 10px 0 14px; }
+.modal-body blockquote p { color: #335; margin: 0; font-size: 13px; }
+.modal-body hr { border: none; border-top: 1px solid #ebebeb; margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CICC Web Development — 授業議事録</h1>
+  <p>全授業ノート一覧 ／ カードをクリックして読む</p>
+</header>
+
+<div class="controls">
+  <input class="search-box" type="text" placeholder="キーワードで検索…" id="search">
+  <div class="filter-btns">
+    <button class="filter-btn active" data-week="all">すべて</button>
+    <button class="filter-btn" data-week="1">第1週</button>
+    <button class="filter-btn" data-week="2">第2週</button>
+    <button class="filter-btn" data-week="3">第3週</button>
+  </div>
+  <span class="count" id="count"></span>
+</div>
+
+<div class="grid" id="grid">
+  <div class="card" data-week="1" data-id="0507"
+    data-keywords="ネットワーク クライアント サーバー http https url ip tcp frontend backend cms devtools lighthouse wordpress webflow">
+    <div class="card-top">
+      <span class="date-badge w1">5/7（木）</span>
+      <span class="week-badge">第1週</span>
+    </div>
+    <h2>ネットワーク基礎 ／ Web開発の全体像</h2>
+    <p class="desc">インターネットの仕組み・URL・HTTP・フロントエンドとバックエンドの役割・Chrome DevTools まで。</p>
+    <div class="tags">
+      <span class="tag">HTTP/HTTPS</span><span class="tag">URL・IP</span><span class="tag">TCP</span>
+      <span class="tag">Frontend/Backend</span><span class="tag">CMS</span><span class="tag">DevTools</span>
+    </div>
+  </div>
+
+  <div class="card" data-week="2" data-id="0511"
+    data-keywords="cli gui シェル shell bash zsh mkdir touch ls cd rm cat nano echo pwd clear パーミッション 権限 vps">
+    <div class="card-top">
+      <span class="date-badge w2">5/11（月）</span>
+      <span class="week-badge">第2週</span>
+    </div>
+    <h2>コマンドライン（CLI）入門 ／ シェルとコマンド操作</h2>
+    <p class="desc">CLIとGUIの違い、Bash/ZSH/CMDの種類、ファイル操作コマンド、パーミッションの基礎。</p>
+    <div class="tags">
+      <span class="tag">CLI/GUI</span><span class="tag">Bash/ZSH</span><span class="tag">mkdir・ls・cd</span>
+      <span class="tag">nano</span><span class="tag">パーミッション</span>
+    </div>
+  </div>
+
+  <div class="card" data-week="2" data-id="0512"
+    data-keywords="git github バージョン管理 vcs init clone add commit push pull status log ブランチ head">
+    <div class="card-top">
+      <span class="date-badge w2">5/12（火）</span>
+      <span class="week-badge">第2週</span>
+    </div>
+    <h2>Git入門 ／ バージョン管理の基礎</h2>
+    <p class="desc">Gitの歴史・VCSの3種類（ローカル/集中型/分散型）・4ステージのワークフロー（add→commit→push）。</p>
+    <div class="tags">
+      <span class="tag">Git vs GitHub</span><span class="tag">分散型VCS</span><span class="tag">4ステージ</span>
+      <span class="tag">git add/commit/push</span><span class="tag">HEAD</span>
+    </div>
+  </div>
+
+  <div class="card" data-week="2" data-id="0513"
+    data-keywords="ブランチ branch マージ merge コンフリクト conflict pull request pr switch checkout dev staging main feature">
+    <div class="card-top">
+      <span class="date-badge w2">5/13（水）</span>
+      <span class="week-badge">第2週</span>
+    </div>
+    <h2>Gitブランチ・マージ・マージコンフリクト</h2>
+    <p class="desc">ブランチの役割と構成（main/staging/dev）、Pull Requestの流れ、コンフリクトの解消方法。</p>
+    <div class="tags">
+      <span class="tag">git branch/switch</span><span class="tag">git merge</span>
+      <span class="tag">Pull Request</span><span class="tag">コンフリクト</span><span class="tag">VS Code GUI</span>
+    </div>
+  </div>
+
+  <div class="card" data-week="2" data-id="0514"
+    data-keywords="git log restore reset revert reflog stash gitignore env readme markdown clean rm mv">
+    <div class="card-top">
+      <span class="date-badge w2">5/14（木）</span>
+      <span class="week-badge">第2週</span>
+    </div>
+    <h2>Git 応用 ／ 履歴・復元・設定ファイル</h2>
+    <p class="desc">コミット履歴の操作（log/reset/revert/reflog）、.gitignore、.env、README.md の Markdown 記法。</p>
+    <div class="tags">
+      <span class="tag">git log</span><span class="tag">git restore</span><span class="tag">reset/revert</span>
+      <span class="tag">reflog</span><span class="tag">.gitignore</span><span class="tag">.env</span><span class="tag">Markdown</span>
+    </div>
+  </div>
+
+  <div class="card" data-week="3" data-id="0519"
+    data-keywords="javascript js 問題解決 アルゴリズム 擬似コード pseudocode crud json api フローチャート 高レベル 低レベル">
+    <div class="card-top">
+      <span class="date-badge w3">5/19（火）</span>
+      <span class="week-badge">第3週</span>
+    </div>
+    <h2>JavaScript入門 ／ 問題解決・アルゴリズム・フローチャート</h2>
+    <p class="desc">問題解決5ステップ・アルゴリズム・擬似コード・CRUD・JSON/API・高レベルvs低レベル言語。</p>
+    <div class="tags">
+      <span class="tag">問題解決5ステップ</span><span class="tag">アルゴリズム</span>
+      <span class="tag">擬似コード</span><span class="tag">CRUD</span><span class="tag">JSON/API</span>
+    </div>
+  </div>
+
+  <div class="card" data-week="3" data-id="0520"
+    data-keywords="javascript 変数 variable let const var スコープ scope 演算子 operator データ型 string number boolean null undefined nan camelcase 命名規則 concatenation console.log node">
+    <div class="card-top">
+      <span class="date-badge w3">5/20（水）</span>
+      <span class="week-badge">第3週</span>
+    </div>
+    <h2>JavaScript基礎 ／ 変数・スコープ・演算子・データ型</h2>
+    <p class="desc">let / const / var の違い、命名規則（camelCase）、グローバル/ローカルスコープ、演算子、データ型（String・Number・Boolean・null・undefined）。</p>
+    <div class="tags">
+      <span class="tag">let / const / var</span><span class="tag">camelCase</span><span class="tag">スコープ</span>
+      <span class="tag">===演算子</span><span class="tag">データ型</span><span class="tag">console.log</span>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="modal" id="modal">
+  <div class="modal-header">
+    <span class="modal-date" id="modal-date"></span>
+    <span class="modal-title" id="modal-title"></span>
+    <button class="close-btn" id="close-btn">✕</button>
+  </div>
+  <div class="modal-body" id="modal-body"></div>
+</div>
+
+<script>
+// ── 議事録コンテンツ ──────────────────────────────
+const notes = {
+"0507": `# Web-dev 授業議事録
+**日付：** 2026年5月7日 ／ **テーマ：** ネットワーク基礎・Web開発の全体像
+
+---
+
+## 本日のアジェンダ
+1. ネットワークとインターネットとは何か
+2. URLの構成
+3. ドメインとIPアドレス
+4. リクエスト・レスポンスの仕組み
+5. ウェブページ vs ウェブアプリケーション
+6. フロントエンド / バックエンドの役割
+7. CMS（コンテンツ管理システム）
+8. Chrome DevTools の使い方
+
+---
+
+## 1. クライアントとサーバー
+
+- **クライアント** … ユーザーが操作する側（ブラウザ、スマホアプリ等）
+- **サーバー** … データを提供する側
+- すべての通信は **クライアント ↔ サーバー** の関係で成り立っている
+
+---
+
+## 2. 開発チームの構成
+
+| 役割 | 担当内容 |
+|------|----------|
+| フロントエンド | UIの見た目・レスポンシブ・パフォーマンス最適化 |
+| バックエンド | サーバー・データベース・デプロイ |
+| デザイナー（UIUX） | ワイヤーフレーム・モックアップ作成 |
+| QAテスター | 機能テスト・エッジケースの検証 |
+| プロジェクトマネージャー | 進行管理・対外的な窓口 |
+
+> スタートアップでは開発者が **フルスタック** として全役割を兼任することが多い
+
+---
+
+## 3. インターネットの仕組み
+
+- **インターネット** = ネットワークのネットワーク（巨大な接続の網）
+- 起源：1960年代の ARPANET
+- 世界の通信の約95%は**海底ケーブル（光ファイバー）**を経由
+- 距離が離れるほどレイテンシが増える
+
+### モデムとルーター
+| 機器 | 役割 |
+|------|------|
+| モデム | ISP（インターネットプロバイダ）との接続 |
+| ルーター | 家庭内の複数デバイスへWi-Fi信号を分配 |
+
+---
+
+## 4. URLの構成要素
+
+\`\`\`
+https://www.example.com/path
+\`\`\`
+
+| 部分 | 名称 | 説明 |
+|------|------|------|
+| \`https\` | プロトコル | SSLで暗号化された安全な通信。現在の標準 |
+| \`www\` | サブドメイン | \`sheets.google.com\` の \`sheets\` なども同様 |
+| \`example\` | ドメイン | サーバーを識別する名前 |
+| \`.com\` | TLD | \`.dev\`、\`.app\`、\`.ca\` など種類多数 |
+
+> ドメイン購入には **Porkbun** がおすすめ（GoDaddyは避ける）
+
+---
+
+## 5. IPアドレス
+
+### IPv4
+- 形式：\`xxx.xxx.xxx.xxx\`（各0〜255、4グループ）
+- 2019年頃に枯渇。現在は**シェアードIP**が一般的
+
+### IPv6
+- 形式：英数字8グループ
+- 組み合わせ数が膨大で事実上枯渇しない
+
+---
+
+## 6. リクエストとレスポンス
+
+\`\`\`
+ブラウザ → リクエスト → サーバー
+         ← レスポンス ←
+\`\`\`
+
+1. URLを入力 → DNSでIPアドレスを解決
+2. ハンドシェイクで接続確立
+3. サーバーがHTML等のデータを返す
+4. ブラウザが描画
+
+### TCP（Transmission Control Protocol）
+- パケットが全て正しく届いたかを確認する仕組み
+- データは小さなパケットに分割して送受信される
+
+---
+
+## 7. ポート
+
+| ポート | 用途 |
+|--------|------|
+| 80 / 8080 | HTTP |
+| 443 | HTTPS |
+| 587 | SMTP（メール送信） |
+| 993 | IMAP（メール受信） |
+
+---
+
+## 8. フロントエンド / バックエンド
+
+### フロントエンド
+- 使用技術：HTML、CSS、JavaScript、React、Next.js、Tailwind CSS
+
+### バックエンド
+- 使用技術：Node.js、Express、Ruby on Rails、Laravel
+
+**MERNスタック：** MongoDB + Express + React + Node.js
+
+---
+
+## 9. CMS（コンテンツ管理システム）
+
+| ツール | 特徴 |
+|--------|------|
+| WordPress（.org）| 自己ホスト型。世界の約43〜44%のサイトが使用 |
+| Wix / Webflow | GUIでのサイト構築。制限あり |
+
+---
+
+## 10. Chrome DevTools
+
+| タブ | 用途 |
+|------|------|
+| Elements | HTML構造確認・CSSリアルタイム編集 |
+| Console | JSのログ・エラー確認 |
+| Network | リクエスト/レスポンスの一覧 |
+| Lighthouse | SEO・アクセシビリティ・パフォーマンスのスコアリング |
+
+---
+
+## まとめ
+- インターネット＝海底ケーブルで繋がれた巨大なネットワークの網
+- URLにはプロトコル・サブドメイン・ドメイン・TLDが含まれる
+- IPv4は枯渇。今後はIPv6が標準
+- フロントエンドは見た目、バックエンドは機能を担当
+- Chrome DevToolsは開発の必需品
+`,
+
+"0511": `# Web-dev 授業議事録
+**日付：** 2026年5月11日 ／ **テーマ：** CLI入門・シェルとコマンド操作
+
+---
+
+## 本日のアジェンダ
+1. CLIとは何か・なぜ使うのか
+2. シェル（Shell）とは何か
+3. Bashとは
+4. シェルの種類
+5. 基本コマンド
+6. ファイルの作成・閲覧・編集・削除
+7. ファイルパーミッション（権限）
+8. VPSサーバーとCLI
+
+---
+
+## 用語の読み方
+
+| 略語 | 正しい読み方 | 意味 |
+|------|------------|------|
+| **CLI** | シーエルアイ | Command Line Interface |
+| **GUI** | ジーユーアイ | Graphical User Interface |
+
+---
+
+## 1. CLIとは
+
+- **CLI** = コマンドを入力してOSに命令を送るテキストベースのインターフェース
+- コンピュータはもともとCLIしかなかった（マウスは後から登場）
+- GUIの「右クリック→新規フォルダ」は裏で \`mkdir\` を実行しているだけ
+
+### OS別のCLI
+| OS | CLI |
+|----|-----|
+| Windows | コマンドプロンプト（CMD）、PowerShell、**Git Bash（推奨）** |
+| Mac | ターミナル |
+| Linux | ターミナル（Bash） |
+
+> ⚠️ **WindowsはGit Bashを使うこと！** コマンドプロンプトでは動かないコマンドがある
+
+---
+
+## 2. なぜCLIを使うのか
+
+| 理由 | 説明 |
+|------|------|
+| **強力なコマンド実行** | GUIでは実行できない高度な操作が可能 |
+| **効率化** | コマンド一発でGUI数クリック分の操作が完了 |
+| **パッケージのインストール** | React・Node.js などの開発ツールはCLIで起動する |
+| **サーバー管理** | VPSサーバーはGUIがなくCLIのみで操作する |
+
+---
+
+## 3. シェル（Shell）とは
+
+- **シェル** = CLI内で動くプログラム（コマンドを解釈してOSに伝える通訳）
+
+\`\`\`
+[ユーザー] → コマンド入力 → [シェル（通訳）] → [OS] → 実行
+\`\`\`
+
+### シェルの種類
+| シェル | 説明 |
+|-------|------|
+| **Bash** | Linux・Mac（旧）・Git Bash |
+| **ZSH** | Mac（現在の標準）。Bashの改良版 |
+| **CMD** | Windows コマンドプロンプト |
+| **PowerShell** | Windows。CMDより高機能 |
+
+---
+
+## 4. 基本コマンド一覧
+
+### ナビゲーション系
+\`\`\`bash
+pwd             # 現在いるディレクトリのパスを表示
+ls              # ディレクトリの中身を表示
+ls -la          # 詳細情報（権限・サイズ・隠しファイル）を表示
+cd <フォルダ名>  # 指定フォルダに移動
+cd ..           # 1つ上のディレクトリに戻る
+cd ../..        # 2つ上に戻る
+cd ~            # ユーザーホームに戻る
+cd /            # システムルートに移動
+clear           # 画面をクリア
+\`\`\`
+
+### ファイル・フォルダ作成
+\`\`\`bash
+mkdir <フォルダ名>               # フォルダを作成
+mkdir folder1 folder2 folder3   # 複数フォルダを一度に作成
+touch <ファイル名>               # 空のファイルを作成
+\`\`\`
+
+### ファイルの内容操作
+\`\`\`bash
+echo "テキスト"               # テキストを出力
+echo "テキスト" > file.txt    # ファイルに書き込む（上書き）
+echo "テキスト" >> file.txt   # ファイルに追記（上書きしない）
+cat <ファイル名>               # ファイルの内容を表示
+nano <ファイル名>              # nanoエディタでファイルを開いて編集
+\`\`\`
+
+### 削除
+\`\`\`bash
+rm <ファイル名>   # ファイルを削除（⚠️ 確認なし・ゴミ箱なし・完全削除）
+\`\`\`
+
+---
+
+## 5. nanoエディタの使い方
+
+\`\`\`bash
+nano <ファイル名>   # ファイルをnanoで開く
+\`\`\`
+
+| 操作 | キー |
+|------|------|
+| 保存して終了 | \`Ctrl + X\` → \`Y\` → \`Enter\` |
+| 変更を破棄して終了 | \`Ctrl + X\` → \`N\` |
+
+---
+
+## 6. ファイルパーミッション（権限）
+
+\`\`\`
+rwx r-x r-x
+│   │   └── 公開ユーザー（Other）
+│   └────── グループ
+└────────── ファイルオーナー
+
+r = read / w = write / x = execute / - = 権限なし
+\`\`\`
+
+| 数値 | 権限 |
+|------|------|
+| 7 | rwx（読み・書き・実行）|
+| 6 | rw-（読み・書き）|
+| 5 | r-x（読み・実行）|
+| 4 | r--（読みのみ）|
+
+- **推奨設定：755**（オーナーは全権、グループ・公開は読み・実行のみ）
+- **777は絶対NG**（公開ユーザーが書き込み・実行できてしまう）
+
+---
+
+## まとめ
+
+| コマンド | 用途 |
+|---------|------|
+| pwd | 現在のパスを表示 |
+| ls / ls -la | フォルダ内容の表示 |
+| cd | ディレクトリの移動 |
+| mkdir | フォルダの作成 |
+| touch | ファイルの作成 |
+| rm | ファイルの削除（元に戻せない！） |
+| cat | ファイル内容の表示 |
+| nano | CLIテキストエディタ |
+| echo > | ファイルへの書き込み（上書き） |
+| echo >> | ファイルへの追記 |
+`,
+
+"0512": `# Web-dev 授業議事録
+**日付：** 2026年5月12日 ／ **テーマ：** Git入門・バージョン管理の基礎
+
+---
+
+## 本日のアジェンダ
+1. Gitとは何か・なぜ使うのか
+2. バージョン管理システム（VCS）の種類
+3. Git vs GitHub の違い
+4. 基本的なGitワークフロー
+5. GUI vs CLI
+6. Gitの初期設定
+7. 主要コマンド
+8. ブランチとHEADの概念
+
+---
+
+## 1. Gitとは
+
+- **Git** = 分散型バージョン管理システム（VCS）
+- 2005年、**Linus Torvalds**（Linuxの生みの親）が**わずか10日間**で開発
+
+### なぜGitを使うのか
+| 理由 | 説明 |
+|------|------|
+| **ロールバック** | 過去の状態にいつでも戻れる |
+| **バックアップ** | コードの履歴が自動的に保存される |
+| **コラボレーション** | 複数人が同じプロジェクトで並行作業できる |
+
+---
+
+## 2. バージョン管理システム（VCS）の3種類
+
+### ① ローカルVCS（コピー＆ペースト）
+- 手動でフォルダをコピーして管理
+- **問題点：** どれが最新か分からなくなる
+
+### ② 集中型VCS
+- 例：**Google Docs**（リアルタイムで同じファイルを編集）
+- **問題点：** サーバーが落ちると全員が作業できなくなる
+
+### ③ 分散型VCS ← **Gitはこれ**
+\`\`\`
+[GitHub（リモート）]
+      ↕
+[自分のPC（ローカル）] ← 完全なコピーを持っている
+\`\`\`
+- 全員がリポジトリの**完全なコピー**をローカルに持つ
+- サーバーが落ちてもローカルで作業を続けられる
+
+---
+
+## 3. Git vs GitHub の違い
+
+| | Git | GitHub |
+|---|---|---|
+| **種類** | ソフトウェア（ツール） | ウェブサービス |
+| **役割** | ローカルでのバージョン管理 | リモートリポジトリのホスティング |
+| **類似サービス** | ― | GitLab、Bitbucket |
+
+---
+
+## 4. 基本的なGitワークフロー（4つのステージ）
+
+\`\`\`
+[Working Directory] → [Staging Area] → [Local Repository] → [Remote Repository]
+  作業フォルダ           ステージング        ローカルリポジトリ       GitHub など
+
+       git add              git commit             git push
+ ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+                                                   git pull / git clone
+\`\`\`
+
+> コミット = ゲームのセーブポイント。好きなチェックポイントにいつでも戻れる
+
+---
+
+## 5. Gitの初期設定
+
+\`\`\`bash
+git config --global user.name "あなたの名前"
+git config --global user.email "your@email.com"
+git config --list   # 設定を確認
+\`\`\`
+
+---
+
+## 6. 主要コマンド
+
+\`\`\`bash
+git init            # 現在のフォルダをGitリポジトリとして初期化
+git clone <URL>     # GitHubからリポジトリをダウンロード
+git status          # 変更されたファイルの一覧を確認
+git log             # コミット履歴を表示
+git log --oneline   # 1行でコンパクトに表示
+git add <ファイル名>  # 特定のファイルをステージングに追加
+git add .           # 全ての変更をステージングに追加
+git commit -m "メッセージ"  # コミット
+git push            # GitHubに送信
+git pull            # GitHubの最新変更をローカルに取得
+\`\`\`
+
+### コミットメッセージの書き方（推奨）
+\`\`\`
+feat: ログイン機能を追加
+fix: ナビゲーションのバグを修正
+chore: パッケージを更新
+docs: READMEを更新
+\`\`\`
+
+---
+
+## 7. ローカルから始める vs GitHubから始める
+
+### ローカルから始める
+\`\`\`bash
+mkdir my-project && cd my-project
+git init
+git remote add origin <URL>
+git push -u origin main
+\`\`\`
+
+### GitHubから始める ← **課題・演習はこちらが多い**
+\`\`\`bash
+git clone <URL>
+# → git init 不要。すぐ作業開始できる
+\`\`\`
+
+---
+
+## まとめ
+
+| キーワード | 内容 |
+|----------|------|
+| Git | 分散型VCS（2005年, Linus Torvalds作） |
+| VCSの種類 | ローカル・集中型・分散型。Gitは分散型 |
+| Git vs GitHub | Git=ツール / GitHub=ホスティングサービス |
+| コミット | ゲームのセーブポイント |
+| git add | ステージングへ追加 |
+| git commit | ローカルリポジトリに記録 |
+| git push | リモート（GitHub）に送信 |
+| git pull | リモートから取得 |
+| git clone | リモートからコピーしてローカルに作成 |
+`,
+
+"0513": `# Web-dev 授業議事録
+**日付：** 2026年5月13日 ／ **テーマ：** Gitブランチ・マージ・マージコンフリクト
+
+---
+
+## 本日のアジェンダ
+1. Gitワークフロー（昨日の復習）
+2. ブランチとは何か・なぜ使うのか
+3. ブランチの作成・切り替えコマンド
+4. マルチブランチ構成（main / staging / dev）
+5. ブランチのマージ
+6. Pull Request（コードレビュー）
+7. マージコンフリクトの解消
+8. VS Code の Git GUI
+9. よくあるミスと対処法
+
+---
+
+## 1. ブランチとは
+
+- 既存のブランチの「コピー」を作り、独立した作業ができる仕組み
+- **メインブランチに直接触れずに**、安全に新機能・修正を開発できる
+
+> 「main ブランチは赤ちゃんのように扱う。壊れるとすべてが崩れる」
+
+---
+
+## 2. ブランチの典型的な構成
+
+\`\`\`
+main          ← 本番サイト（絶対に壊さない）
+  └── staging ← クライアントがプレビューするブランチ
+       └── dev ← 開発ブランチ
+            └── feature/xxx / bugfix/xxx など
+\`\`\`
+
+### 流れ
+1. \`dev\` からブランチを作って開発
+2. 完成 → \`dev\` にマージ
+3. テスト OK → \`staging\` にマージ（クライアントが確認）
+4. 承認 → \`main\` にマージ（本番公開）
+
+---
+
+## 3. ブランチ操作コマンド
+
+\`\`\`bash
+git branch                  # ブランチ一覧を表示（現在地に * が付く）
+git branch <ブランチ名>      # 新しいブランチを作成
+git switch <ブランチ名>      # ブランチを切り替える
+git switch -c <ブランチ名>   # 作成＆切り替えを同時に（推奨）
+git checkout <ブランチ名>    # 古い切り替えコマンド（switch推奨）
+\`\`\`
+
+### ブランチを作る前に必ず確認！
+\`\`\`bash
+git branch          # 今どのブランチにいるか確認
+git switch dev      # 目的のブランチに移動してから作成
+git switch -c feature/header
+\`\`\`
+
+> ⚠️ **どのブランチから作ったか Git は教えてくれない。自分で覚えておく！**
+
+---
+
+## 4. ブランチのマージ
+
+\`\`\`bash
+# 「取り込む側」のブランチに移動してから merge する
+git switch dev
+git merge feature/header    # feature/header の変更を dev に取り込む
+\`\`\`
+
+**ルール：** 必ず親ブランチに移動してから \`git merge 子ブランチ\` を実行
+
+---
+
+## 5. Pull Request（PR）
+
+- **GitHub 上でブランチをマージする際の正式なプロセス**
+- ローカルの \`git merge\` はレビューなしにマージできてしまうので、チームでは PR を使う
+
+### PR の流れ
+1. 自分のブランチで作業 → GitHub に push
+2. GitHub で Pull Request を作成
+3. チームメンバーが**コードレビュー**
+4. 承認された → マージ OK
+
+### 役割別のマージ権限（例）
+| 役職 | マージできる範囲 |
+|------|----------------|
+| ジュニア | feature → dev |
+| シニア | dev → staging |
+| マネージャー | staging → main |
+
+---
+
+## 6. マージコンフリクト（Merge Conflict）
+
+**2つのブランチが同じファイルの同じ行を別々に変更したとき**に発生する。
+
+\`\`\`
+<<<<<<< HEAD（現在のブランチの内容）
+Sai's version of the header
+=======
+Kazi's version of the header
+>>>>>>> feature/header
+\`\`\`
+
+### VS Code での解消方法
+| 選択肢 | 意味 |
+|--------|------|
+| **Accept Current Change** | 現在のブランチの内容を使う |
+| **Accept Incoming Change** | マージ元ブランチの内容を使う |
+| **Accept Both Changes** | 両方を残す |
+
+### 解消後の手順
+\`\`\`bash
+git add <コンフリクトを解消したファイル>
+git commit -m "merge: resolve conflict in header"
+\`\`\`
+
+### コンフリクトを防ぐには
+- 同じファイルを複数人で同時に編集しない
+- Slackなどで「今この部分触ってます」と連絡する
+- 定期的に親ブランチの変更を自分のブランチに取り込む
+
+---
+
+## 7. ブランチ操作早見表
+
+| やりたいこと | コマンド |
+|------------|---------|
+| ブランチ一覧を見る | \`git branch\` |
+| ブランチを作る | \`git branch <名前>\` |
+| ブランチに切り替える | \`git switch <名前>\` |
+| 作成＆切り替えを同時に | \`git switch -c <名前>\` |
+| ブランチをマージする | \`git merge <マージ元>\` ※マージ先にいる状態で |
+| 親ブランチの変更を取り込む | \`git merge main\` or \`git pull origin main\` |
+| ブランチを削除する | \`git branch -d <名前>\` |
+`,
+
+"0514": `# Web-dev 授業議事録
+**日付：** 2026年5月14日 ／ **テーマ：** Git応用・履歴・復元・設定ファイル
+
+---
+
+## 本日のアジェンダ
+1. Gitの4ステージとワークフロー復習
+2. よくあるミス（git init の場所問題）
+3. git clone でAssignmentを始める方法
+4. git add の使い分け（\`. \` vs \`-A\`）
+5. コミットメッセージのベストプラクティス
+6. git log のオプション
+7. git restore / git mv / git rm / git clean
+8. git revert vs git reset（時間旅行コマンド）
+9. HEAD・reflog
+10. .gitignore の使い方
+11. README.md と Markdown記法
+12. .env ファイル（環境変数）
+
+---
+
+## 1. よくあるミス：git init の場所に注意！
+
+### ❌ NG：ホームディレクトリで git init してしまう
+\`\`\`bash
+cd ~
+git init      # ← 全フォルダがリポジトリ化される大惨事
+\`\`\`
+
+### 修復方法
+\`\`\`bash
+rm -rf .git   # .git フォルダを削除すれば元通り
+\`\`\`
+
+### ✅ 正しい運用
+- **常に対象の課題フォルダを直接 VS Code で開く**
+
+---
+
+## 2. git add の使い分け
+
+| コマンド | 対象 |
+|---------|------|
+| \`git add <ファイル名>\` | 指定ファイルのみ |
+| \`git add .\` | 現在いるディレクトリ内の変更のみ |
+| \`git add -A\` | **プロジェクト全体**の変更をすべて（推奨） |
+
+---
+
+## 3. コミットメッセージのベストプラクティス
+
+- **最大72文字**（GitHub はそれ以上をカット）
+- **短く・具体的に**（「fix」「update」だけはNG）
+- **小文字**で書く
+
+| 接頭語 | 意味 | 例 |
+|--------|------|----|
+| \`feat:\` | 新機能 | \`feat: add login form\` |
+| \`fix:\` | バグ修正 | \`fix: resolve null pointer in cart\` |
+| \`chore:\` | 雑務 | \`chore: rename index to start\` |
+
+---
+
+## 4. git log：コミット履歴の確認
+
+\`\`\`bash
+git log                   # 全履歴を表示
+git log --oneline         # 1行で簡潔に表示（推奨）
+git log --author="名前"   # 特定ユーザーのコミットのみ
+git log --since="2026-05-13"  # 特定日以降のコミット
+\`\`\`
+
+> \`Q\` で終了 / \`Space\` で次ページ
+
+---
+
+## 5. git restore：変更を元に戻す
+
+\`\`\`bash
+# Working Directory の変更を取り消す
+git restore <ファイル名>
+
+# Staging Area からファイルを取り消す（ステージ解除）
+git restore --staged <ファイル名>
+
+# 特定のコミット時点のファイルを取り出す
+git restore --source <ハッシュコード> <ファイル名>
+\`\`\`
+
+---
+
+## 6. 時間旅行：git revert vs git reset
+
+### HEAD とは
+- **HEAD** = 現在いるコミットを指すポインタ
+
+### git revert（安全・推奨）
+\`\`\`bash
+git revert <ハッシュコード>
+\`\`\`
+
+| 特徴 | 詳細 |
+|------|------|
+| 仕組み | 指定コミットに戻る**新しいコミットを作成** |
+| 履歴 | **過去のコミットは削除されない** |
+| 使い時 | Push済み・チーム開発 |
+
+### git reset（危険・ローカル限定）
+\`\`\`bash
+git reset --soft <ハッシュコード>   # ステージングの内容は保持
+git reset --mixed <ハッシュコード>  # ステージングを解除（デフォルト）
+git reset --hard <ハッシュコード>   # 全変更を完全削除（最も危険）
+\`\`\`
+
+> ⚠️ **Push済みのコードに git reset を使うと、チームメンバーのコミットも消える危険あり！**
+
+### まとめ比較表
+| コマンド | 用途 | 履歴 | 推奨場面 |
+|---------|------|------|---------|
+| \`git revert\` | 過去に戻る（新コミット作成） | 保持される | Push済み・チーム開発 |
+| \`git reset --hard\` | 過去に戻る（コミット削除） | 消える | ローカルのみ、Push前 |
+| \`git restore --source\` | 特定ファイルだけ取り出す | 変化なし | いつでも安全 |
+
+---
+
+## 7. git reflog：「消えた」コミットを探す
+
+\`\`\`bash
+git reflog
+\`\`\`
+
+- \`git reset\` で消えたように見えたコミットも、実は**残っている**
+- \`git log\` はメイン履歴のみ / \`git reflog\` は全コミット
+
+---
+
+## 8. .gitignore：追跡したくないファイルを除外
+
+\`\`\`
+# .gitignore の書き方
+.env              # 環境変数ファイル
+node_modules/     # 依存パッケージ
+*.log             # ログファイル
+\`\`\`
+
+---
+
+## 9. .env ファイル（環境変数）
+
+\`\`\`env
+GMAIL_API_KEY=xxxxxxxxxxxx
+DATABASE_PASSWORD=superSecure123
+\`\`\`
+
+- **APIキーやパスワードは絶対にリポジトリに含めない**
+- \`.env\` ファイルは必ず \`.gitignore\` に追加する
+
+### 命名規則
+| ケース | 書き方 | 用途 |
+|--------|--------|------|
+| UPPER_SNAKE_CASE | \`GMAIL_API_KEY\` | .env の変数名 |
+| camelCase | \`myVariable\` | JavaScript の変数名 |
+| PascalCase | \`MyComponent\` | コンポーネント名 |
+| kebab-case | \`my-component\` | ファイル名・CSSクラス名 |
+
+---
+
+## 10. README.md と Markdown 記法
+
+\`\`\`markdown
+# 見出し1 / ## 見出し2 / ### 見出し3
+**太字** / _斜体_
+- 箇条書き / 1. 番号付きリスト
+\`インラインコード\`
+[リンクテキスト](URL)
+![代替テキスト](画像URL)
+- [ ] チェックボックス（未完了）
+- [x] チェックボックス（完了）
+\`\`\`
+
+---
+
+## まとめ
+
+| コマンド | 用途 |
+|---------|------|
+| \`git add -A\` | 全変更をステージング |
+| \`git log --oneline\` | コミット履歴を簡潔に表示 |
+| \`git restore <file>\` | 変更を取り消す |
+| \`git revert <hash>\` | 安全に過去に戻る（Push済みに使う） |
+| \`git reset --hard <hash>\` | 過去に戻りコミットを削除（ローカル限定） |
+| \`git reflog\` | 削除済みコミットも含め全履歴確認 |
+| \`git rm --cached <file>\` | ファイルの追跡を解除 |
+`,
+
+"0519": `# Web-dev 授業議事録
+**日付：** 2026年5月19日 ／ **テーマ：** JavaScript入門・問題解決・アルゴリズム・フローチャート
+
+---
+
+## 本日のアジェンダ
+1. 問題解決（Problem Solving）
+2. プログラミング言語とは / JavaScriptとは
+3. 擬似コード（Pseudocode）とアルゴリズム
+4. フローチャート
+5. 演習（Exercise）
+
+---
+
+## コース全体のスケジュール
+
+- **今週（第3週）**：JavaScript入門（基礎・アルゴリズム中心）
+- **第4週**：最終プロジェクト
+- 流れ：**JavaScript → HTML/CSS → Node.js → React**
+- JavaScriptを最初に学ぶ理由：論理的思考・アルゴリズム構築の基礎を先に固めるため
+
+---
+
+## 1. 問題解決（Problem Solving）
+
+### 問題解決の基本ステップ
+
+| 問い | 内容 |
+|------|------|
+| **What（何が問題？）** | 問題の内容を明確にする |
+| **When（いつ起きる？）** | 発生タイミングを特定する |
+| **Why（なぜ起きる？）** | 原因を調査・特定する |
+| **What instead（本来はどうあるべき？）** | 期待する状態を定義する |
+| **How（どう解決する？）** | 解決策を実行する |
+
+### 例：朝寝坊してしまう
+- What：授業に遅刻してしまう
+- When：毎朝
+- Why：夜更かしをしてしまうから
+- What instead：早起きして余裕を持って到着したい
+- How：早く寝る or アラームを複数セットする
+
+---
+
+## 2. W3C とブラウザ標準化
+
+- 以前はブラウザごとにレンダリングが異なり、3セット分のコードが必要だった
+- 現在は W3C 標準に準拠し、Chromeで動けばほぼ他でも動く
+
+| ブラウザ | シェア |
+|---------|------|
+| Google Chrome | 約62% |
+| Safari | 約17% |
+| Edge | 低め |
+
+---
+
+## 3. アルゴリズムとは
+
+- **アルゴリズム** = 問題を解決するための手順・手続きの集まり
+- コーダーでなくても作れる！論理的思考があれば誰でも作成可能
+
+### 日常での例：お腹が空いたとき
+1. 冷蔵庫の中を確認する
+2. 何を作るか決める
+3. 料理を始める
+4. 食べる
+
+---
+
+## 4. 擬似コード（Pseudocode）
+
+- 実際のコードを書く前に、**自然言語や自由な形式**で手順を書き出すこと
+- メモ帳やノートにも書ける。プログラミング言語のルールに縛られない
+
+\`\`\`
+// 擬似コードの例：フォームの送信
+1. ユーザーが送信ボタンをクリックする
+2. 入力データを検証する
+3. エラーがあれば表示する
+4. 問題なければサーバーに送信する
+5. 完了メッセージを表示する
+\`\`\`
+
+---
+
+## 5. AIについて
+
+- 現在のAIは「**非常に高度な自動補完システム**」に近い（Transformerという仕組みを使用）
+- 人間のように「考える」のではなく、次に来る言葉を**予測**している
+- **バイブコーディング**で作ったコードは、理解していないとバグ対応ができない
+- 技術面接では「どうやって作ったか」を説明できることが必須
+
+---
+
+## 6. CRUD（クラッド）
+
+| 略語 | 操作 | 説明 |
+|------|------|------|
+| **C** reate | 作成 | データを追加する |
+| **R** ead | 読み取り | データを取得する |
+| **U** pdate | 更新 | データを編集する |
+| **D** elete | 削除 | データを消す |
+
+- この概念は **RESTful API** の基本
+- Node.js / Express でバックエンドを作る際に実装する
+
+---
+
+## 7. APIデータとJSON
+
+\`\`\`json
+{
+  "temperature": 13.7,
+  "is_day": 1,
+  "precipitation": 0,
+  "windspeed": 12.4
+}
+\`\`\`
+
+- アプリ間でやり取りされるデータの形式 = **JSON（JavaScript Object Notation）**
+- \`is_day: 1\` → 昼間 / \`0\` → 夜
+
+---
+
+## 8. プログラミング言語：高レベル vs 低レベル
+
+| 種類 | 特徴 | 例 |
+|------|------|----|
+| 低レベル | コンピュータに近い。速いが読みにくい | バイナリ、アセンブリ |
+| 高レベル | 人間の言葉に近い。読みやすく書きやすい | JavaScript、Python、Ruby |
+
+---
+
+## 9. JavaScriptの基本記号
+
+| 記号 | 名称 | 用途 |
+|------|------|------|
+| \`{ }\` | カーリーブラケット | オブジェクト、ブロック、関数の定義 |
+| \`[ ]\` | スクエアブラケット | 配列の定義・要素へのアクセス |
+| \`( )\` | 括弧 | 関数の引数、条件式 |
+| \`;\` | セミコロン | 文の終わりを示す |
+
+> 特に \`{ }\` と \`[ ]\` の混同に注意！
+
+---
+
+## まとめ
+- 問題解決は **What / When / Why / What instead / How** の5つで整理する
+- アルゴリズム = **問題解決の手順**。エンジニアでなくても作れる
+- **擬似コード**でまずアイデアを書き出してからコードに落とす
+- CRUDはあらゆるシステムの基本操作
+- 高レベル言語（JavaScript等）は人間が読みやすい
+`,
+
+"0520": `# Web-dev 授業議事録
+**日付：** 2026年5月20日 ／ **テーマ：** JavaScript基礎・変数・スコープ・演算子・データ型
+
+---
+
+## 1. JavaScriptの歴史
+
+- **Brendan Eich** が **Netscape Navigator** のために **10日間**で開発
+- 当初の名前：\`LiveScript\` → \`JavaScript\` → 公式名は **ECMAScript（ES）**
+- Oracle が「Java」の商標を持ち訴訟に発展したが、開発者コミュニティの支持で名称が生き残った
+
+### バージョン変遷
+| バージョン | 内容 |
+|-----------|------|
+| ES5以前 | \`var\` を使用。古いブラウザ向け |
+| **ES6（2015年）** | \`let\` と \`const\` が登場。最大の変更点 |
+| ES2016 / ES2017... | 毎年改善が続く。現在はES7前後 |
+
+---
+
+## 2. 変数（Variables）
+
+### 変数とは
+- **値を格納するための名前付きの箱**
+
+### let / const / var の比較
+
+| | let | const | var |
+|--|-----|-------|-----|
+| 値の変更 | ✅ 可能 | ❌ 不可 | ✅ 可能 |
+| 同名で再宣言 | ❌ 不可 | ❌ 不可 | ✅ 可能（混乱の原因） |
+| 導入バージョン | ES6 | ES6 | ES5以前 |
+| 現在の推奨 | ✅ | ✅ | ⚠️ 非推奨 |
+
+\`\`\`js
+let userName = 'Miu';
+userName = 'Unagi';    // 上書き可能
+
+const paws = 4;
+paws = 7;              // ❌ エラー！"assignment to constant variable"
+
+var myName = 'John';   // 古い書き方（非推奨）
+\`\`\`
+
+### Node.jsでのテスト方法
+\`\`\`bash
+node variables.js    # .jsファイルを実行してconsole.logの内容を表示
+\`\`\`
+
+> ⚠️ **JavaScriptは上から下に順番に読まれる**
+> 宣言より前に \`console.log\` を書くとクラッシュする
+
+---
+
+## 3. 変数の命名規則
+
+| ケース名 | 書き方例 | 使い場面 |
+|---------|---------|---------|
+| **camelCase** | \`firstName\` | 変数名・関数名（JS標準） |
+| **PascalCase** | \`MyComponent\` | Reactコンポーネント名 |
+| **UPPER_SNAKE_CASE** | \`GMAIL_API_KEY\` | 定数（\`const\`） |
+| **snake_case** | \`my_folder\` | フォルダ名・ディレクトリ名 |
+| **kebab-case** | \`my-component\` | ファイル名・CSSクラス名 |
+
+\`\`\`js
+// ✅ 有効な名前
+let firstName = 'John';
+let age25 = true;
+
+// ❌ 無効な名前
+let 1stPlayer = 'A';    // 数字で始めてはいけない
+let my-hobby = 'ski';   // ハイフン不可
+let my hobby = 'ski';   // スペース不可
+let let = 'value';      // 予約語は使えない
+\`\`\`
+
+> ⚠️ フォルダ名・ファイル名にスペースを入れない（サーバー構築時にエラーの原因）
+
+---
+
+## 4. スコープ（Scope）
+
+スコープ = **変数がアクセスできる範囲**
+
+\`\`\`js
+let petName = 'Buster';           // グローバル変数（どこからでも見える）
+
+if (true) {
+  let localName = 'Brutal';       // ローカル変数（このブロック内でのみ有効）
+  console.log(petName);           // ✅ → "Buster"（親スコープにアクセス可）
+  console.log(localName);         // ✅ → "Brutal"
+}
+
+console.log(petName);             // ✅ → "Buster"
+console.log(localName);           // ❌ クラッシュ！外からローカル変数は見えない
+\`\`\`
+
+### スコープの基本ルール
+
+| ルール | 説明 |
+|--------|------|
+| 子は親を見られる | 内側から外側の変数にアクセス可 |
+| 親は子を見られない | 外側から内側の変数にはアクセス不可 |
+| \`{ }\` 内で宣言 = ローカル変数 | if / for / 関数の中で宣言した変数 |
+| \`{ }\` 外で宣言 = グローバル変数 | どのスコープからもアクセス可 |
+
+---
+
+## 5. 演算子（Operators）
+
+### 算術演算子
+| 演算子 | 意味 | 例 |
+|--------|------|----|
+| \`+\` | 加算 or 文字列結合 | \`5 + 3\` → \`8\` |
+| \`-\` | 減算 | \`10 - 4\` → \`6\` |
+| \`*\` | 乗算 | \`4 * 5\` → \`20\` |
+| \`/\` | 除算 | \`10 / 2\` → \`5\` |
+| \`%\` | 余り（モジュロ） | \`9 % 2\` → \`1\` |
+| \`**\` | べき乗 | \`2 ** 3\` → \`8\` |
+
+### 比較演算子
+| 演算子 | 意味 |
+|--------|------|
+| \`===\` | 値と型が等しい（厳密・推奨） |
+| \`==\` | 値が等しい（型変換あり・注意） |
+| \`!==\` | 値または型が等しくない（厳密） |
+
+> ⚠️ **\`===\` を使うのが基本！**
+> \`=\` は代入、\`==\` は緩い比較、\`===\` は厳密な比較
+
+---
+
+## 6. データ型（Data Types）
+
+| データ型 | 説明 | 例 |
+|---------|------|----|
+| **Number** | 整数・小数 | \`25\`, \`3.14\` |
+| **String** | 文字列（クォートで囲む） | \`"Hello"\`, \`'Miu'\` |
+| **Boolean** | \`true\` または \`false\` のみ | \`true\`, \`false\` |
+| **null** | 「何もない」という値（意図的） | \`null\` |
+| **undefined** | 値が設定されていない | \`undefined\` |
+| **NaN** | Not-a-Number | \`"abc" * 2\` |
+| **Date** | 日付・時刻オブジェクト | \`new Date()\` |
+
+### null と undefined の違い
+\`\`\`js
+let dogName = null;       // null：将来は値が入るが今は何もない
+let wifeName = undefined; // undefined：一切値を設定していない
+\`\`\`
+
+---
+
+## 7. 文字列の結合（String Concatenation）
+
+\`+\` は数値の**足し算**と文字列の**結合**の2つの役割を持つ。
+
+\`\`\`js
+let firstName = 'John';
+let lastName = 'Smith';
+let fullName = firstName + ' ' + lastName;
+console.log(fullName);   // → "John Smith"
+
+let num = "10";
+console.log(num + 5);    // → "105"（文字列結合になる！）
+console.log(num - 5);    // → 5（-は数値計算のみ）
+\`\`\`
+
+> ⚠️ **\`+\` は文字列が1つでも混ざると結合になる**
+
+---
+
+## まとめ
+
+| キーワード | 内容 |
+|----------|------|
+| **let** | 値を変更できる変数 |
+| **const** | 値を変更できない定数 |
+| **var** | 古い書き方（非推奨） |
+| **camelCase** | JS変数の命名規則 |
+| **グローバルスコープ** | \`{}\` の外で宣言。どこからでもアクセス可 |
+| **ローカルスコープ** | \`{}\` の中で宣言。外からはアクセス不可 |
+| **===** | 値と型を厳密に比較。推奨 |
+| **null** | 何もないという値（意図的）|
+| **undefined** | 値が一切設定されていない |
+| **console.log** | ターミナルに値を出力して確認 |
+| **node ファイル名.js** | Node.jsでJSファイルを実行するコマンド |
+`
+};
+
+// ── カードデータ ──────────────────────────────
+const cardMeta = {
+  "0507": { date: "5/7（木）", title: "ネットワーク基礎 ／ Web開発の全体像", color: "w1" },
+  "0511": { date: "5/11（月）", title: "コマンドライン（CLI）入門 ／ シェルとコマンド操作", color: "w2" },
+  "0512": { date: "5/12（火）", title: "Git入門 ／ バージョン管理の基礎", color: "w2" },
+  "0513": { date: "5/13（水）", title: "Gitブランチ・マージ・マージコンフリクト", color: "w2" },
+  "0514": { date: "5/14（木）", title: "Git応用 ／ 履歴・復元・設定ファイル", color: "w2" },
+  "0519": { date: "5/19（火）", title: "JavaScript入門 ／ 問題解決・アルゴリズム", color: "w3" },
+  "0520": { date: "5/20（水）", title: "JavaScript基礎 ／ 変数・スコープ・演算子・データ型", color: "w3" },
+};
+
+// ── モーダル ──────────────────────────────────
+const overlay = document.getElementById("overlay");
+const modal   = document.getElementById("modal");
+const modalDate  = document.getElementById("modal-date");
+const modalTitle = document.getElementById("modal-title");
+const modalBody  = document.getElementById("modal-body");
+
+function openNote(id) {
+  const meta = cardMeta[id];
+  modalDate.textContent = meta.date;
+  modalDate.className = "modal-date " + meta.color;
+  modalTitle.textContent = meta.title;
+  modalBody.innerHTML = marked.parse(notes[id]);
+  overlay.classList.add("open");
+  modal.classList.add("open");
+  modal.scrollTop = 0;
+  document.body.style.overflow = "hidden";
+}
+
+function closeNote() {
+  overlay.classList.remove("open");
+  modal.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("close-btn").addEventListener("click", closeNote);
+overlay.addEventListener("click", closeNote);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeNote(); });
+
+document.querySelectorAll(".card").forEach(card => {
+  card.addEventListener("click", () => openNote(card.dataset.id));
+});
+
+// ── 検索・フィルター ──────────────────────────
+const searchInput = document.getElementById("search");
+const countEl     = document.getElementById("count");
+const filterBtns  = document.querySelectorAll(".filter-btn");
+const cards       = document.querySelectorAll(".card");
+let currentWeek   = "all";
+
+function applyFilters() {
+  const query = searchInput.value.trim().toLowerCase();
+  cards.forEach(card => {
+    const kw    = card.dataset.keywords || "";
+    const title = card.querySelector("h2").textContent.toLowerCase();
+    const desc  = card.querySelector(".desc").textContent.toLowerCase();
+    const tags  = card.querySelector(".tags").textContent.toLowerCase();
+    const week  = card.dataset.week;
+    const matchSearch = !query || [title, desc, kw, tags].some(t => t.includes(query));
+    const matchWeek   = currentWeek === "all" || week === currentWeek;
+    card.dataset.hidden = !(matchSearch && matchWeek);
+  });
+  const visible = document.querySelectorAll(".card:not([data-hidden='true'])").length;
+  countEl.textContent = visible + " 件";
+  let noEl = document.querySelector(".no-results");
+  if (visible === 0) {
+    if (!noEl) { noEl = document.createElement("p"); noEl.className = "no-results"; noEl.textContent = "該当する議事録が見つかりませんでした"; document.getElementById("grid").appendChild(noEl); }
+  } else if (noEl) noEl.remove();
+}
+
+searchInput.addEventListener("input", applyFilters);
+filterBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    filterBtns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentWeek = btn.dataset.week;
+    applyFilters();
+  });
+});
+applyFilters();
+</script>
+</body>
+</html>
