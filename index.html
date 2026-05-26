@@ -189,6 +189,62 @@ header p { margin-top: 4px; font-size: 12px; color: #888; }
       <span class="tag">===演算子</span><span class="tag">データ型</span><span class="tag">console.log</span>
     </div>
   </div>
+
+  <div class="card" data-week="3" data-id="0521"
+    data-keywords="条件分岐 conditional if else switch truthy falsy 三項演算子 ternary ループ loop while for インクリメント increment モジュロ modulo 論理演算子 logical and or not 二重等号 三重等号 === 無限ループ infinite">
+    <div class="card-top">
+      <span class="date-badge w3">5/21（木）</span>
+      <span class="week-badge">第3週</span>
+    </div>
+    <h2>JavaScript ／ 条件分岐・ループ・三項演算子</h2>
+    <p class="desc">Truthy/Falsy・==vs===・if/else・論理演算子（&&・||・!）・三項演算子・switch文・while/forループ・モジュロ演算子（%）・無限ループの罠。</p>
+    <div class="tags">
+      <span class="tag">Truthy/Falsy</span><span class="tag">===</span><span class="tag">三項演算子</span>
+      <span class="tag">switch</span><span class="tag">while / for</span><span class="tag">% モジュロ</span>
+    </div>
+  </div>
+
+  <div class="card" data-week="3" data-id="0522"
+    data-keywords="関数 function 宣言 declaration 式 expression 匿名 anonymous アロー arrow コールバック callback ホイスティング hoisting シャドーイング shadowing 文字列 string split reverse join tolowercase 回文 palindrome ライブラリ library import export prettier">
+    <div class="card-top">
+      <span class="date-badge w3">5/22（金）</span>
+      <span class="week-badge">第3週</span>
+    </div>
+    <h2>JavaScript ／ 関数の種類・コールバック・ホイスティング・文字列メソッド</h2>
+    <p class="desc">関数宣言・式・匿名・アロー関数の違い、コールバック関数、ホイスティング、シャドーイング、split/reverse/join による回文チェック、import/export。</p>
+    <div class="tags">
+      <span class="tag">関数4種類</span><span class="tag">コールバック</span><span class="tag">ホイスティング</span>
+      <span class="tag">palindrome</span><span class="tag">import/export</span><span class="tag">Prettier</span>
+    </div>
+  </div>
+
+  <div class="card" data-week="3" data-id="0525"
+    data-keywords="javascript 配列 array オブジェクト object 関数 function メソッド method this スプレッド spread インデックス index push length for loop ネスト nest console.table アロー arrow">
+    <div class="card-top">
+      <span class="date-badge w3">5/25（月）</span>
+      <span class="week-badge">第3週</span>
+    </div>
+    <h2>JavaScript ／ 配列・オブジェクト・メソッド・this</h2>
+    <p class="desc">配列（[]・インデックス・push・length）、オブジェクト（{} ・ドット/ブラケット記法）、オブジェクトの配列、ネスト構造、メソッドとthis、スプレッド演算子入門。</p>
+    <div class="tags">
+      <span class="tag">配列（Array）</span><span class="tag">オブジェクト（Object）</span><span class="tag">メソッド</span>
+      <span class="tag">this キーワード</span><span class="tag">スプレッド（...）</span><span class="tag">console.table</span>
+    </div>
+  </div>
+
+  <div class="card" data-week="3" data-id="0526"
+    data-keywords="es6 モダン javascript 高階関数 hof map filter foreach reduce アロー arrow テンプレートリテラル template literal デフォルトパラメータ 分割代入 destructuring for of for in 参照渡し reference スプレッド spread チェーン chain jquery">
+    <div class="card-top">
+      <span class="date-badge w3">5/26（火）</span>
+      <span class="week-badge">第3週</span>
+    </div>
+    <h2>ES6 ／ 高階関数（map・filter・forEach・reduce）</h2>
+    <p class="desc">参照渡しの罠・スプレッドコピー、テンプレートリテラル、アロー関数、デフォルトパラメータ、分割代入、for...of / for...in、HOFs（map / filter / forEach / reduce）とチェーン。</p>
+    <div class="tags">
+      <span class="tag">map / filter / reduce</span><span class="tag">forEach</span><span class="tag">アロー関数</span>
+      <span class="tag">分割代入</span><span class="tag">参照渡しの罠</span><span class="tag">HOFチェーン</span>
+    </div>
+  </div>
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -1341,7 +1397,1524 @@ console.log(num - 5);    // → 5（-は数値計算のみ）
 | **undefined** | 値が一切設定されていない |
 | **console.log** | ターミナルに値を出力して確認 |
 | **node ファイル名.js** | Node.jsでJSファイルを実行するコマンド |
+`,
+"0525": `# Web-dev 授業議事録
+**日付：** 2026年5月25日
+**科目：** CICC Web Development
+**テーマ：** JavaScript ／ 配列（Arrays）・オブジェクト（Objects）
+
+---
+
+## 本日のアジェンダ
+
+1. 関数（Functions）復習
+2. 配列（Arrays）
+3. オブジェクト（Objects）
+4. 配列とオブジェクトの組み合わせ
+5. ネストした配列・オブジェクト
+6. メソッド（Methods）と \`this\`
+7. スプレッド演算子（入門）
+
+---
+
+## 1. 関数（Functions）復習
+
+### 関数宣言 vs 関数式
+
+\`\`\`js
+// 関数宣言（Function Declaration）
+// → ホイスティングにより、定義より前に呼び出せる
+function add(num1, num2) {
+  return num1 + num2;
+}
+console.log(add(5, 10));  // → 15
+
+// 関数式（Function Expression）
+// → 変数として扱われるため、定義より前には呼び出せない
+const subtract = function(num1, num2) {
+  return num1 - num2;
+};
+console.log(subtract(10, 5));  // → 5
+\`\`\`
+
+### return について
+- \`return\` はその関数の**戻り値**を指定する
+- \`return\` に達した時点で関数が終了（以降のコードは実行されない）
+- \`console.log\` は出力するだけで値を返さない
+
+### var のホイスティング問題
+\`\`\`js
+console.log(fruit);   // → undefined（エラーにならないが不正確）
+var fruit = 'apple';
+
+console.log(fruit2);  // → ❌ エラー（ReferenceError）
+let fruit2 = 'apple';
+\`\`\`
+
+> \`var\` は宣言前に呼んでも \`undefined\` を返してしまう → バグの温床
+> \`let\` / \`const\` はエラーを出してくれるので問題を早期発見できる
+
+---
+
+## 2. 配列（Arrays）
+
+### 配列とは
+- **関連する値のリスト**をまとめて格納する特殊なオブジェクト
+- 角かっこ \`[ ]\` で作成し、各要素をカンマで区切る
+
+\`\`\`js
+const fruits = ['apple', 'banana', 'orange', 'mango'];
+const numbers = [3, 5, 2, 4.5];
+const mixed = ['John', 5, null, false];  // 異なるデータ型の混在も可能（非推奨）
+\`\`\`
+
+### インデックス（Index）
+
+- 配列の各要素には **0始まり** のインデックスが付く
+- \`配列名[インデックス]\` でアクセスする
+
+\`\`\`js
+const fruits = ['apple', 'banana', 'orange', 'mango'];
+//                  0         1         2        3
+
+console.log(fruits[0]);   // → "apple"
+console.log(fruits[3]);   // → "mango"
+console.log(fruits[4]);   // → undefined（存在しないインデックス）
+\`\`\`
+
+### 要素の更新・追加・長さ
+
+\`\`\`js
+fruits[0] = 'Apple';       // インデックスを指定して上書き
+fruits.push('grapes');     // 末尾に追加
+console.log(fruits.length); // → 要素の数
+\`\`\`
+
+---
+
+## 3. for ループで配列を繰り返す
+
+\`\`\`js
+const fruits = ['apple', 'banana', 'orange', 'mango'];
+
+for (let i = 0; i < fruits.length; i++) {
+  console.log(fruits[i]);
+}
+// → apple / banana / orange / mango
+\`\`\`
+
+> \`fruits.length\` を使うことで、要素が増減しても自動的に対応できる
+
+---
+
+## 4. オブジェクト（Objects）
+
+### オブジェクトとは
+- **1つのエンティティ（個体）** を複数の属性でまとめて表現するもの
+- 複数の**プロパティ（key-valueペア）**を持てる
+
+\`\`\`js
+const student = {
+  firstName: 'John',
+  lastName: 'Smith',
+  age: 30,
+  hobbies: ['coding', 'UIUX', 'digital marketing'],
+  isEnrolled: true
+};
+\`\`\`
+
+| 用語 | 説明 | 例 |
+|------|------|----|
+| **プロパティ** | オブジェクトが持つ属性（key-valueペア） | \`firstName: 'John'\` |
+| **キー（key）** | プロパティの名前 | \`firstName\` |
+| **値（value）** | プロパティの中身 | \`'John'\` |
+
+> **配列** = 複数の個体のリスト / **オブジェクト** = 1つの個体の詳細情報
+
+### プロパティへのアクセス
+
+\`\`\`js
+// ドット記法
+console.log(student.firstName);    // → "John"
+console.log(student.age);          // → 30
+
+// ブラケット記法（キーにスペースが含まれる場合に必要）
+console.log(student['firstName']);   // → "John"
+const country = { 'country code': 'PH' };
+console.log(country['country code']); // ✅ → "PH"
+\`\`\`
+
+### プロパティの更新・追加
+
+\`\`\`js
+const employee = { firstName: 'Joel', salary: 70000 };
+employee.firstName = 'Joey';     // 既存プロパティの更新
+employee.hireDate = 2026;        // 新しいプロパティの追加
+\`\`\`
+
+---
+
+## 5. 配列とオブジェクトの組み合わせ
+
+実務では「**オブジェクトの配列**」が最も一般的なデータ構造。
+
+\`\`\`js
+const students = [
+  { firstName: 'John', lastName: 'Smith' },
+  { firstName: 'Jane', lastName: 'Doe' }
+];
+
+console.log(students[0].firstName);  // → "John"
+console.log(students[1].lastName);   // → "Doe"
+\`\`\`
+
+### for ループ＋条件付きフィルタリング
+
+\`\`\`js
+const products = [
+  { name: 'iPhone 20', price: 999, isSale: false },
+  { name: 'MacBook M7', price: 1299, isSale: true },
+  { name: 'Apple Watch', price: 799, isSale: false }
+];
+
+// セール中の商品だけ表示
+for (let i = 0; i < products.length; i++) {
+  if (products[i].isSale) {
+    console.log(products[i]);
+  }
+}
+// → MacBook M7 だけが表示される
+\`\`\`
+
+---
+
+## 6. ネストしたオブジェクト・配列
+
+\`\`\`js
+const citizen = {
+  firstName: 'Jane',
+  workplace: {
+    name: 'ABC Company',
+    founded: 2025
+  },
+  gadgets: [
+    {
+      name: 'iPhone 24 Max',
+      price: 1500,
+      specs: { ram: '8GB', cpu: 'A18' }
+    },
+    {
+      name: 'Samsung Galaxy 30',
+      price: 900,
+      specs: { ram: '16GB', cpu: 'Snapdragon' }
+    }
+  ]
+};
+
+console.log(citizen.workplace.name);       // → "ABC Company"
+console.log(citizen.gadgets[1].specs.ram); // → "16GB"
+console.log(citizen.gadgets[0].specs.cpu); // → "A18"
+\`\`\`
+
+> **アクセスのコツ：** 配列なら \`[インデックス]\`、オブジェクトなら \`.キー名\`
+
+---
+
+## 7. メソッド（Methods）と \`this\`
+
+オブジェクトの値に**関数**を設定したものを **メソッド** と呼ぶ。
+
+\`\`\`js
+const workerA = {
+  firstName: 'John',
+  lastName: 'Smith',
+  dateOfBirth: 1990,
+
+  introduce: function(message) {
+    return \`Hi, I am \${this.firstName} \${this.lastName}. \${message}\`;
+  },
+
+  getAge: function() {
+    return new Date().getFullYear() - this.dateOfBirth;
+  }
+};
+
+console.log(workerA.introduce('Nice to meet you!'));
+// → "Hi, I am John Smith. Nice to meet you!"
+console.log(workerA.getAge()); // → 36（2026 - 1990）
+\`\`\`
+
+### ⚠️ アロー関数とメソッドの注意点
+
+\`\`\`js
+const workerB = {
+  firstName: 'Miu',
+
+  // ❌ アロー関数だと this がオブジェクトを指さない
+  greet: () => {
+    return \`Hi, I am \${this.firstName}\`;  // → undefined
+  },
+
+  // ✅ 通常の関数なら this が正しく機能する
+  greet: function() {
+    return \`Hi, I am \${this.firstName}\`;  // → "Miu"
+  }
+};
+\`\`\`
+
+> メソッドには**アロー関数ではなく通常の関数**を使うこと
+
+---
+
+## 8. console.table
+
+\`\`\`js
+const todos = [
+  { task: 'Wash laundry', completed: false },
+  { task: 'Cook dinner', completed: false },
+  { task: 'Feed Butch', completed: true }
+];
+
+console.table(todos);
+// ┌─────────┬────────────────┬───────────┐
+// │  index  │     task       │ completed │
+// └─────────┴────────────────┴───────────┘
+\`\`\`
+
+---
+
+## 9. スプレッド演算子（\`...\`）入門
+
+別のオブジェクトのプロパティ・メソッドを**コピーして展開**できる。
+
+\`\`\`js
+const employeeTemplate = {
+  company: 'ABC Corp',
+  getFullName: function() {
+    return \`\${this.firstName} \${this.lastName}\`;
+  }
+};
+
+const employee1 = {
+  ...employeeTemplate,   // company と getFullName がコピーされる
+  firstName: 'John',
+  lastName: 'Smith'
+};
+
+console.log(employee1.getFullName()); // → "John Smith"
+console.log(employee1.company);       // → "ABC Corp"
+\`\`\`
+
+---
+
+## 本日のまとめ
+
+| キーワード | 内容 |
+|----------|------|
+| **配列（Array）** | 関連する値のリスト。\`[...]\` で作成 |
+| **インデックス** | 配列の各要素の番号。0始まり |
+| **array.length** | 配列の要素数 |
+| **array.push(値)** | 配列の末尾に要素を追加 |
+| **オブジェクト（Object）** | 1つの個体を複数プロパティで表現。\`{...}\` で作成 |
+| **プロパティ** | key-valueペア（例：\`firstName: 'John'\`） |
+| **ドット記法** | \`obj.key\` でプロパティにアクセス |
+| **ブラケット記法** | \`obj['key']\` でアクセス（スペースありのキーに必須） |
+| **メソッド** | オブジェクトの値が関数になったもの |
+| **this** | メソッド内でオブジェクト自身を参照するキーワード |
+| **console.table** | 配列・オブジェクトをテーブル形式で表示 |
+| **スプレッド（...）** | 別オブジェクトのプロパティをコピーして展開 |
+| **オブジェクトの配列** | 実務で最もよく使うデータ構造 |
+
+---
+
+## 次回予定
+
+- モダンJavaScript（ES6メソッド）の入門
+- 配列・オブジェクトの復習と演習
+`,
+"0526": `# Web-dev 授業議事録
+**日付：** 2026年5月26日
+**科目：** CICC Web Development
+**テーマ：** ES6 / モダンJavaScript ／ 高階関数（HOFs）
+
+---
+
+## お知らせ
+
+| 日程 | 内容 |
+|------|------|
+| **来週（木・金）** | 中間テスト（2日間） |
+| **第4週（2日間）** | 最終プロジェクト |
+| **今週から** | Week 2 演習スタート |
+
+---
+
+## 1. 配列（Arrays）復習
+
+\`\`\`js
+const fruits = ['apple', 'banana', 'orange'];
+
+// インデックスでアクセス
+console.log(fruits[1]);   // → "banana"
+console.log(fruits[3]);   // → undefined
+
+// 要素の更新
+fruits[1] = 'mango';
+
+// 末尾に追加（push）・削除（pop）
+fruits.push('watermelon');
+const lastElement = fruits.pop();  // 削除した要素を変数に保存できる
+
+// 任意の場所に追加・削除（splice）
+fruits.splice(1, 0, 'grapes');    // index 1 に grapes を挿入（削除なし）
+fruits.splice(2, 2);              // index 2 から 2 個削除
+\`\`\`
+
+---
+
+## 2. オブジェクト（Objects）復習
+
+\`\`\`js
+const student = {
+  firstName: 'John',
+  lastName: 'Smith',
+  introduce: function(sport) {
+    return \`Hello, I am \${this.firstName} \${this.lastName}. I play \${sport}.\`;
+  }
+};
+
+console.log(student.firstName);
+console.log(student.introduce('chess'));
+
+// プロパティの更新・追加
+student.firstName = 'Jack';
+student.college = 'CICC';  // 存在しないキーは自動で追加される
+\`\`\`
+
+### \`this\` vs オブジェクト名の違い
+
+| | \`this\` | \`student\` |
+|--|--------|---------|
+| **意味** | 現在のオブジェクトを直接参照 | コード全体をスキャン |
+| **速度** | ✅ 高速 | ⚠️ 低速 |
+| **推奨** | ✅ メソッド内で推奨 | ⚠️ 不要 |
+
+---
+
+## 3. ⚠️ 参照渡し（Reference）の罠
+
+### 配列・オブジェクトを \`=\` でコピーしてはいけない
+
+\`\`\`js
+const numbersA = [1, 2, 3];
+const numbersB = numbersA;   // ❌ コピーではなく参照（ポインタ）を作成
+
+numbersB.push(4);
+console.log(numbersA); // → [1, 2, 3, 4]（numbersA も変わってしまう！）
+
+// numbersA === numbersB → true（同じ実体を指している）
+\`\`\`
+
+> \`=\` で配列・オブジェクトを代入すると **コピーではなく参照** が作られる。
+
+### ✅ スプレッド演算子で本物のコピーを作る
+
+\`\`\`js
+// 配列のコピー
+const actualCopy = [...numbersA];
+actualCopy.push(100);
+console.log(numbersA);   // → [1, 2, 3]（元は変わらない）
+console.log(actualCopy); // → [1, 2, 3, 100]
+
+// オブジェクトのコピー
+const studentA = { name: 'John' };
+const studentClone = { ...studentA };
+studentClone.college = 'CICC';
+console.log(studentA);     // → { name: 'John' }（元は変わらない）
+\`\`\`
+
+
+## 4. テンプレートリテラル（Template Literals）
+
+\`\`\`js
+const employee = {
+  firstName: 'Charlie',
+  lastName: 'Brown',
+  age: 40,
+  department: 'Engineering',
+  salary: 90000,
+  introduce: function() {
+    return \`Hi, I am \${this.firstName} \${this.lastName}. I am \${this.age} years old. I work at \${this.department}. I earn \${this.salary / 12} monthly.\`;
+  }
+};
+\`\`\`
+
+- \`\${}\` の中に変数・式・計算を入れられる
+- バッククォート（\` \`）で囲むこと
+
+---
+
+## 5. アロー関数（Arrow Functions）
+
+\`\`\`js
+// 関数宣言（従来）
+function add(num1, num2) {
+  return num1 + num2;
+}
+
+// アロー関数（単純な return は1行に省略可）
+const addNums = (num1, num2) => num1 + num2;
+
+// アロー関数 + ターナリ演算子
+const checkPassword = password =>
+  password.length < 8 ? 'Password too short' : 'Password is good';
+
+// else なしの場合は && を使う
+const checkPassword2 = password =>
+  password.length < 8 && 'Password too short';
+\`\`\`
+
+> アロー関数は **単純な return のみ** の場合に最も効果的
+
+---
+
+## 6. デフォルトパラメータ
+
+\`\`\`js
+const greeting = (name, position = 'employee') => {
+  return \`My name is \${name}. I am a \${position}.\`;
+};
+
+console.log(greeting('John'));            // My name is John. I am a employee.
+console.log(greeting('Jane', 'manager')); // My name is Jane. I am a manager.
+\`\`\`
+
+---
+
+## 7. 分割代入（Destructuring）
+
+\`\`\`js
+const product = {
+  name: 'iPhone 20 Pro Max',
+  price: 1299.99,
+  isSale: false,
+  category: 'electronics',
+  color: 'black'
+};
+
+// 分割代入でプロパティを取り出す
+const { name, price, isSale } = product;
+
+// ...rest で残り全部を取得（必ず最後に書く）
+const { name: n, price: p, ...rest } = product;
+console.log(rest.color);    // → "black"
+\`\`\`
+
+---
+
+## 8. \`for...of\` / \`for...in\` ループ
+
+\`\`\`js
+// for...of（配列用）
+const restaurants = ['Starbucks', 'Jollibee', 'A&W'];
+for (const restaurant of restaurants) {
+  console.log(restaurant);
+}
+
+// for...in（オブジェクト用）
+const item = { name: 'Galaxy', price: 1299, isSale: true };
+for (const key in item) {
+  console.log(key);          // name, price, isSale
+  console.log(item[key]);    // ブラケット記法で値を取得
+}
+\`\`\`
+
+| ループ | 対象 | インデックス |
+|--------|------|------------|
+| \`for...of\` | 配列の要素 | なし |
+| \`for...in\` | オブジェクトのキー | — |
+| 通常の \`for\` | なんでも | あり・逆順可 |
+
+---
+
+## 9. 高階関数（HOFs）
+
+| HOF | 目的 | 戻り値 |
+|-----|------|--------|
+| \`map\` | 各要素に関数を適用 | 同数の新しい配列 |
+| \`filter\` | 条件を満たす要素だけ残す | 新しい配列 |
+| \`forEach\` | 各要素に処理を実行 | なし |
+| \`reduce\` | 全要素を1つの値に集約 | 単一の値 |
+
+### map
+
+\`\`\`js
+const faveNumbers = [1, 2, 3];
+const doubleNumbers = faveNumbers.map(num => num * 2);
+// → [2, 4, 6]（元の配列は変わらない）
+\`\`\`
+
+> ⚠️ map は必ず元と同じ数の要素を返す。要素を除外したいなら filter を使う。
+
+### filter
+
+\`\`\`js
+const nums = [1, 2, 3, 4, 5, 6];
+const evens = nums.filter(n => n % 2 === 0); // → [2, 4, 6]
+
+const tasks = [
+  { task: 'Wash laundry', completed: false },
+  { task: 'Cook dinner',  completed: true  }
+];
+const done = tasks.filter(t => t.completed);
+// → [{ task: 'Cook dinner', completed: true }]
+\`\`\`
+
+### forEach
+
+\`\`\`js
+const drinks = ['Coffee', 'Pepsi', 'Coca-Cola'];
+drinks.forEach((drink, index) => {
+  console.log(index, drink); // 0 Coffee, 1 Pepsi, 2 Coca-Cola
+});
+// ※ forEach の中では return を使わない
+\`\`\`
+
+### reduce
+
+\`\`\`js
+const numbers = [1, 2, 3, 4, 5];
+const total = numbers.reduce((acc, cur) => acc + cur, 0);
+// → 15
+
+const products = [
+  { name: 'iPhone', price: 875, isSale: true },
+  { name: 'MacBook', price: 1350, isSale: false },
+  { name: 'AirPods', price: 250, isSale: true }
+];
+
+// 全商品合計
+const totalAmount = products.reduce((t, p) => t + p.price, 0); // → 2475
+
+// セール商品のみ合計
+const saleTotal = products.reduce((t, p) =>
+  p.isSale ? t + p.price : t, 0); // → 1125
+\`\`\`
+
+> ⚠️ reduce では必ず何かを return すること。しないとアキュムレータが undefined になる。
+
+---
+
+## 10. HOFs のチェーン
+
+\`\`\`js
+// filter → map
+const words = ['hello', 'or', 'hey', 'world', 'again'];
+const wordCount = words
+  .filter(w => w.length > 4)
+  .map(w => ({ [w]: w.length }));
+// → [{ hello: 5 }, { world: 5 }, { again: 5 }]
+
+// filter → reduce
+const totalNonSale = products
+  .filter(p => !p.isSale)
+  .reduce((total, p) => total + p.price, 0);
+\`\`\`
+
+---
+
+## まとめ
+
+| キーワード | 内容 |
+|----------|------|
+| **参照渡し** | 配列・オブジェクトを = で代入するとコピーではなくポインタが作られる |
+| **スプレッド（...）** | [...arr] や {...obj} で本物のコピーを作成 |
+| **テンプレートリテラル** | バッククォートで文字列作成。\${} で変数・式を埋め込める |
+| **アロー関数** | 単純な return を1行に省略できる関数 |
+| **デフォルトパラメータ** | 引数なしの場合のフォールバック値 |
+| **分割代入** | const { name } = obj でプロパティを変数に取り出す |
+| **for...of** | 配列の要素を繰り返す |
+| **for...in** | オブジェクトのキーを繰り返す |
+| **map** | 各要素に関数を適用 → 同数の新しい配列 |
+| **filter** | 条件を満たす要素だけ残す |
+| **forEach** | 各要素に処理を実行（return なし） |
+| **reduce** | 全要素を1つの値に集約（合計など） |
+| **HOF チェーン** | .filter().map() のように繋げて使える |
+
+---
+
+## 次回予定
+
+- ES6 メソッド パート2（続き）
+- Week 2 演習（forEach / filter + reduce など）
 `
+
+,
+"0522": `# Web Development 授業議事録
+## 2026年5月22日（金）
+
+---
+
+## 📋 授業の概要
+
+| 項目 | 内容 |
+|------|------|
+| **テーマ** | 関数の種類・コールバック・ホイスティング・文字列メソッド・モジュール |
+| **キーワード** | function declaration, function expression, arrow function, callback, hoisting, shadowing, palindrome, export/import |
+
+---
+
+## 1. 関数の種類（4タイプ）
+
+JavaScriptには関数の書き方が4種類ある。
+
+### 1-1. 関数宣言（Function Declaration）
+
+\`\`\`javascript
+function greet(name) {
+  return "Hello, " + name;
+}
+\`\`\`
+
+- \`function\` キーワードを使った一番基本的な書き方
+- **ホイスティング対象**（後述）
+
+### 1-2. 関数式（Function Expression）
+
+\`\`\`javascript
+const greet = function(name) {
+  return "Hello, " + name;
+};
+\`\`\`
+
+- 関数を変数に代入する書き方
+- ホイスティング**されない**
+
+### 1-3. 匿名関数（Anonymous Function）
+
+\`\`\`javascript
+const greet = function(name) {
+  return "Hello, " + name;
+};
+\`\`\`
+
+- 名前のない関数。関数式の形でよく使われる
+- コールバックとしてそのまま渡すことも多い
+
+### 1-4. アロー関数（Arrow Function）
+
+\`\`\`javascript
+const greet = (name) => {
+  return "Hello, " + name;
+};
+
+// 1行に省略（returnも{}も不要）
+const greet = (name) => "Hello, " + name;
+\`\`\`
+
+- ES6で追加された新しい書き方
+- ホイスティング**されない**
+- 引数が1つなら \`()\` も省略可能
+- 本体が1文なら \`{}\` と \`return\` を省略できる
+
+### まとめ表
+
+| 種類 | 書き方 | ホイスティング |
+|------|--------|--------------|
+| 関数宣言 | \`function foo() {}\` | ✅ される |
+| 関数式 | \`const foo = function() {}\` | ❌ されない |
+| 匿名関数 | \`const foo = function() {}\` | ❌ されない |
+| アロー関数 | \`const foo = () => {}\` | ❌ されない |
+
+---
+
+## 2. コールバック関数（Callback Function）
+
+### 概念
+
+「関数を別の関数の**引数として渡す**」こと。渡された関数が**コールバック関数**。
+
+\`\`\`javascript
+function solve(num1, num2, operation) {
+  return operation(num1, num2);
+}
+
+function addition(a, b) {
+  return a + b;
+}
+
+function subtraction(a, b) {
+  return a - b;
+}
+
+function multiplication(a, b) {
+  return a * b;
+}
+
+console.log(solve(10, 5, addition));      // 15
+console.log(solve(10, 5, subtraction));   // 5
+console.log(solve(10, 5, multiplication)); // 50
+\`\`\`
+
+- \`solve\` は受け取った \`operation\`（関数）を実行する
+- \`addition\`・\`subtraction\`・\`multiplication\` がコールバック関数として渡されている
+- 呼び出す側は \`solve(10, 5, addition)\` — カッコ \`()\` はつけない（渡すだけ）
+
+### 匿名関数を直接渡す
+
+\`\`\`javascript
+console.log(solve(10, 5, function(a, b) { return a + b; }));
+
+// アロー関数でさらに短く
+console.log(solve(10, 5, (a, b) => a + b));
+\`\`\`
+
+---
+
+## 3. ホイスティング（Hoisting）
+
+**定義**：JavaScriptが実行前にコードを「巻き上げ（hoist）」する仕組み。
+
+\`\`\`javascript
+// 関数宣言は呼び出しより前に書かれていなくてもOK
+sayHello(); // 動く！
+
+function sayHello() {
+  console.log("Hello!");
+}
+\`\`\`
+
+\`\`\`javascript
+// 関数式・アロー関数はホイスティングされない
+sayHi(); // ❌ エラー！
+
+const sayHi = () => {
+  console.log("Hi!");
+};
+\`\`\`
+
+### ポイント
+
+- 関数宣言（\`function foo() {}\`）だけがホイスティングされる
+- \`const\` / \`let\` で定義した関数式・アロー関数はホイスティング**されない**
+- コードの読みやすさのために、宣言は使う前に書く習慣が大事
+
+---
+
+## 4. シャドーイング（Shadowing）
+
+**定義**：内側のスコープで同名の変数を定義すると、外側の変数が「隠れる（shadow）」現象。
+
+\`\`\`javascript
+const name = "Global";
+
+function greet() {
+  const name = "Local"; // 内側のスコープで同名を定義
+  console.log(name);    // "Local"（外のnameは隠れている）
+}
+
+greet();
+console.log(name); // "Global"（外は影響なし）
+\`\`\`
+
+### ポイント
+
+- 変数名の衝突を避けるために、スコープを意識することが大事
+- シャドーイングはバグの原因になりやすいので注意
+
+---
+
+## 5. 文字列メソッド
+
+### よく使うメソッド
+
+| メソッド | 説明 | 例 |
+|----------|------|----|
+| \`split(区切り文字)\` | 文字列を配列に分割 | \`"abc".split("") → ["a","b","c"]\` |
+| \`reverse()\` | 配列を逆順にする（※文字列には直接使えない） | \`[1,2,3].reverse() → [3,2,1]\` |
+| \`join(区切り文字)\` | 配列を文字列に結合 | \`["a","b","c"].join("") → "abc"\` |
+| \`toLowerCase()\` | 文字列を小文字に変換 | \`"Hello".toLowerCase() → "hello"\` |
+
+> ⚠️ \`reverse()\` は**配列のメソッド**。文字列に直接は使えない。  
+> split → reverse → join の3ステップで文字列を逆順にする。
+
+---
+
+## 6. 回文チェック関数（Palindrome）
+
+「前から読んでも後ろから読んでも同じ文字列」を判定する関数。
+
+### バージョン1：ループを使う
+
+\`\`\`javascript
+function isPalindrome(str) {
+  const lower = str.toLowerCase();
+  for (let i = 0; i < Math.floor(lower.length / 2); i++) {
+    if (lower[i] !== lower[lower.length - 1 - i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+console.log(isPalindrome("racecar")); // true
+console.log(isPalindrome("hello"));  // false
+\`\`\`
+
+### バージョン2：メソッドチェーン（1行版）
+
+\`\`\`javascript
+function isPalindrome(str) {
+  const lower = str.toLowerCase();
+  return lower === lower.split("").reverse().join("");
+}
+\`\`\`
+
+- \`split("")\` → 1文字ずつの配列に
+- \`reverse()\` → 配列を逆順に
+- \`join("")\` → また文字列に結合
+- 元の文字列と比較して \`true\` / \`false\` を返す
+
+### アロー関数で超コンパクトに
+
+\`\`\`javascript
+const isPalindrome = str =>
+  str.toLowerCase() === str.toLowerCase().split("").reverse().join("");
+\`\`\`
+
+---
+
+## 7. ライブラリ・ユーティリティファイル（import / export）
+
+### 考え方
+
+よく使う関数をまとめたファイル（ライブラリ）を作って、他のファイルから呼び出す。
+
+\`\`\`
+project/
+├── utils.js     ← 共通関数をまとめたファイル
+└── main.js      ← utils.jsを読み込んで使う
+\`\`\`
+
+### utils.js（エクスポート側）
+
+\`\`\`javascript
+// CommonJS 形式（Node.js でよく使う）
+function add(a, b) {
+  return a + b;
+}
+
+function subtract(a, b) {
+  return a - b;
+}
+
+module.exports = { add, subtract };
+\`\`\`
+
+\`\`\`javascript
+// ES Module 形式（モダンJS / ブラウザ）
+export function add(a, b) {
+  return a + b;
+}
+
+export function subtract(a, b) {
+  return a - b;
+}
+\`\`\`
+
+### main.js（インポート側）
+
+\`\`\`javascript
+// CommonJS
+const { add, subtract } = require("./utils.js");
+
+// ES Module
+import { add, subtract } from "./utils.js";
+
+console.log(add(3, 2));      // 5
+console.log(subtract(10, 4)); // 6
+\`\`\`
+
+### ポイント
+
+- \`require()\` = CommonJS（Node.js 環境）
+- \`import\` = ES Module（現代的な書き方、ブラウザ対応）
+- \`{}\` を使った分割代入で必要な関数だけを取り出せる
+
+---
+
+## 8. アロー関数のさらなる省略
+
+### 通常版 → 省略版
+
+\`\`\`javascript
+// 通常のアロー関数
+const double = (n) => {
+  return n * 2;
+};
+
+// {}とreturnを省略
+const double = (n) => n * 2;
+
+// 引数が1つならカッコも省略
+const double = n => n * 2;
+\`\`\`
+
+### 三項演算子 + アロー関数
+
+\`\`\`javascript
+// 偶数・奇数判定
+const isEven = n => n % 2 === 0 ? "偶数" : "奇数";
+
+console.log(isEven(4)); // "偶数"
+console.log(isEven(7)); // "奇数"
+\`\`\`
+
+---
+
+## 9. Prettier 拡張機能
+
+### 概要
+
+- VS Code の拡張機能
+- コードを**自動整形**してくれるフォーマッター
+- インデントやスペースを統一して読みやすくしてくれる
+
+### 設定方法
+
+1. VS Code の拡張機能タブ（左サイドバー）で「Prettier」を検索
+2. インストール
+3. \`settings.json\` に追加：
+   \`\`\`json
+   "editor.defaultFormatter": "esbenp.prettier-vscode",
+   "editor.formatOnSave": true
+   \`\`\`
+4. ファイル保存時（Ctrl+S / Cmd+S）に自動整形される
+
+---
+
+## 🔑 今日のまとめ
+
+| トピック | 要点 |
+|----------|------|
+| **関数の種類** | 宣言・式・匿名・アロー。ホイスティングは宣言のみ |
+| **コールバック** | 関数を引数として渡す。渡すときは \`()\` をつけない |
+| **ホイスティング** | 関数宣言のみ巻き上げられる。アロー・式は❌ |
+| **シャドーイング** | 内側スコープの同名変数が外側を隠す |
+| **文字列メソッド** | split → reverse → join で文字列を逆順に |
+| **Palindrome** | 文字列 === 逆順文字列 で判定 |
+| **import/export** | ライブラリ化でコードを再利用。require vs import |
+| **Prettier** | 保存時に自動整形。チームで統一したスタイルに |
+`
+
+,
+"0521": `# Web Development 授業議事録
+## 2026年5月21日（木）
+
+---
+
+## 📋 授業の概要
+
+| 項目 | 内容 |
+|------|------|
+| **テーマ** | 条件分岐（if/else・switch）・ループ（while・for）・三項演算子 |
+| **キーワード** | truthy/falsy, ==vs===, logical operators, ternary, switch, while, for, modulo |
+
+---
+
+## 1. 変数の復習（let / const / var）
+
+| キーワード | 変更 | 用途 |
+|------------|------|------|
+| \`let\` | ✅ 可能 | 値が変わる変数 |
+| \`const\` | ❌ 不可 | 変わらない定数 |
+| \`var\` | ✅ 可能 | 古い書き方（非推奨） |
+
+\`\`\`javascript
+let firstName = "John";
+firstName = "Jane"; // OK
+
+const pi = 3.14;
+// pi = 3.15; // ❌ エラー
+
+// テンプレートリテラル（バッククォートを使う）
+const fullName = \`\${firstName} Smith\`;
+console.log(fullName); // "Jane Smith"
+\`\`\`
+
+> ⚠️ バッククォート（\`\` \` \`\`）はシングルクォート（\`'\`）ではない。  
+> Macでは Escape キーの下。変数を埋め込むには \`\${}\` を使う。
+
+---
+
+## 2. Truthy と Falsy
+
+JavaScriptでは、if文の条件に \`true\` / \`false\` 以外の値も使える。
+
+### Truthy（常に true として扱われるもの）
+
+| 値 | 説明 |
+|----|------|
+| \`true\` | boolean の true |
+| 任意の文字列（空でないもの） | \`"hello"\`, \`"0"\`, \`"false"\` も true |
+| 0以外の数値 | \`1\`, \`-1\`, \`3.14\` など |
+
+\`\`\`javascript
+const name = "Brutal";
+if (name) {
+  console.log("always true"); // 文字列なので true
+}
+\`\`\`
+
+### Falsy（常に false として扱われるもの）
+
+| 値 | 説明 |
+|----|------|
+| \`false\` | boolean の false |
+| \`0\` | ゼロのみ（-1 や 1 は true） |
+| \`null\` | 空の値 |
+| \`undefined\` | 宣言したが値未設定 |
+| \`""\` | 空文字列 |
+
+\`\`\`javascript
+const message = ""; // 空文字列
+if (message) {
+  console.log("メッセージあり");
+} else {
+  console.log("メッセージなし"); // こちらが実行される
+}
+\`\`\`
+
+---
+
+## 3. == と === の違い
+
+| 演算子 | チェック対象 | 精度 |
+|--------|------------|------|
+| \`==\`（二重等号） | 値のみ | 甘い（型を無視） |
+| \`===\`（三重等号） | 値 ＋ データ型 | 厳密（推奨） |
+
+\`\`\`javascript
+const isSnowy = true; // boolean
+
+if (isSnowy == true)  { console.log("二重: 一致"); } // 文字列 "true" でも通る
+if (isSnowy === true) { console.log("三重: 厳密一致"); } // boolean true のみ
+\`\`\`
+
+> **ルール：常に \`===\` を使う。\`==\` は使わない。**
+
+---
+
+## 4. 条件分岐（if / else if / else）
+
+\`\`\`javascript
+const isRaining = false;
+const isCold = true;
+
+if (isRaining) {
+  console.log("傘を忘れずに");
+} else if (isCold) {
+  console.log("マフラーを巻いて"); // ← これが実行される
+} else {
+  console.log("出発準備OK");
+}
+\`\`\`
+
+### ポイント
+
+- 上から順に評価し、**最初に true になった条件だけ**が実行される
+- else は必須ではない（なくてもコードは動く）
+- 複数の条件が true でも、最初のひとつだけ実行される
+
+### 範囲チェックの例
+
+\`\`\`javascript
+const myAge = 25;
+
+if (myAge <= 17) {
+  console.log("キッズ");
+} else if (myAge >= 18 && myAge <= 30) {
+  console.log("若い大人"); // ← 25なのでここ
+} else if (myAge >= 31 && myAge <= 40) {
+  console.log("クールな大人");
+} else {
+  console.log("定年について考える時期かも");
+}
+\`\`\`
+
+---
+
+## 5. 論理演算子（Logical Operators）
+
+### AND（\`&&\`）— 両方 true のとき true
+
+\`\`\`javascript
+const isRunning = true;
+const isJogging = false;
+
+if (isRunning && isJogging) {
+  console.log("走りながらジョギング中");
+} else {
+  console.log("何かやってる"); // こちらが実行される
+}
+\`\`\`
+
+### OR（\`||\`）— どちらか一方が true のとき true
+
+\`\`\`javascript
+const isSnowing = false;
+const isRaining = true;
+
+if (isSnowing || isRaining) {
+  console.log("ジャケットを着て"); // isRaining が true → 実行される
+} else {
+  console.log("Tシャツで OK");
+}
+\`\`\`
+
+### NOT（\`!\`）— true/false を反転
+
+\`\`\`javascript
+const hasError = false;
+
+if (!hasError) {
+  console.log("エラーなし"); // !false = true → 実行される
+}
+// 上は以下と同じ
+if (hasError === false) { ... }
+\`\`\`
+
+### グループ化（括弧が重要）
+
+\`\`\`javascript
+const price = 40;
+const isSale = true;
+const isFree = false;
+
+// 括弧で優先順位を明示する
+if (price > 50 && (isSale || isFree)) {
+  console.log("お得！");
+} else {
+  console.log("通常価格");
+}
+\`\`\`
+
+> ⚠️ \`&&\` と \`||\` が混在するときは **必ず括弧でグループ化**する。  
+> 括弧がないと JavaScript が意図と違う解釈をすることがある。
+
+---
+
+## 6. 三項演算子（Ternary Operator）
+
+### 構文
+
+\`\`\`
+条件 ? 真の場合の値 : 偽の場合の値
+\`\`\`
+
+### if/else との比較
+
+\`\`\`javascript
+// 通常の if/else
+let color;
+if (isGoing) {
+  color = "green";
+} else {
+  color = "red";
+}
+
+// 三項演算子（1行）
+const color = isGoing ? "green" : "red";
+\`\`\`
+
+### 実用例
+
+\`\`\`javascript
+const isCold = true;
+const attire = isCold ? "スカーフ" : "Tシャツ";
+console.log(attire); // "スカーフ"
+
+const isLoggedIn = true;
+const message = isLoggedIn ? "ようこそ、ユーザー" : "ようこそ、ゲスト";
+\`\`\`
+
+### テンプレートリテラルの中でも使える
+
+\`\`\`javascript
+const currentAge = 22;
+console.log(\`\${currentAge >= 18 ? "成人です" : "未成年です"}\`);
+// → "成人です"
+\`\`\`
+
+### ネスト（複数条件）
+
+\`\`\`javascript
+let barNotice = currentAge < 18
+  ? "飲酒不可"
+  : currentAge >= 18
+    ? "飲酒OK"
+    : "本当に人間ですか？";
+\`\`\`
+
+### 使い分け
+
+| 場面 | 使う構文 |
+|------|----------|
+| 変数に値をセットするだけ | 三項演算子 ✅ |
+| 複数行の処理が必要 | if/else ✅ |
+| React/JSX のテンプレート内 | 三項演算子 ✅（if/else は書けない） |
+
+---
+
+## 7. Switch 文
+
+複数の値を比較するとき、if/else より読みやすい。
+
+\`\`\`javascript
+const operator = "multiply";
+const num1 = 10;
+const num2 = 5;
+
+switch (operator) {
+  case "add":
+    console.log(num1 + num2); // 15
+    break;
+  case "subtract":
+    console.log(num1 - num2); // 5
+    break;
+  case "multiply":
+    console.log(num1 * num2); // 50 ← ここが実行される
+    break;
+  case "divide":
+    console.log(num1 / num2); // 2
+    break;
+  default:
+    console.log("数学してる？");
+}
+\`\`\`
+
+### ポイント
+
+- 各 case の最後に **\`break\` が必須**。ないと次の case にも流れる（フォールスルー）
+- \`default\` は if の \`else\` と同じ（マッチする case がなかった場合）
+- **単一の変数の値だけを比較するとき**に最適。複雑な条件には if/else を使う
+
+---
+
+## 8. while ループ
+
+\`\`\`javascript
+let count = 0;
+
+while (count < 10) {
+  console.log("Hello, World!");
+  count++; // ← これがないと無限ループ！
+}
+\`\`\`
+
+### カウントダウンの例
+
+\`\`\`javascript
+let countdown = 10;
+
+while (countdown >= 0) {
+  if (countdown === 0) {
+    console.log("🎉 完了！");
+  } else {
+    console.log(countdown);
+  }
+  countdown--;
+}
+// 10, 9, 8 ... 1, 0, 🎉 完了！
+\`\`\`
+
+> ⚠️ **インクリメント/デクリメントを忘れると無限ループになる！**  
+> 無限ループが発生したら \`Ctrl + C\` で停止する。
+
+---
+
+## 9. for ループ
+
+### 構文（3つのパーツ）
+
+\`\`\`javascript
+for (開始; 継続条件; ステップ) {
+  // 繰り返す処理
+}
+\`\`\`
+
+\`\`\`javascript
+for (let i = 0; i < 5; i++) {
+  console.log("Hello, World!"); // 5回出力
+}
+\`\`\`
+
+| パーツ | 説明 | 例 |
+|--------|------|----|
+| 開始 | インデックスの初期値 | \`let i = 0\` |
+| 継続条件 | これが true の間ループ | \`i < 5\` |
+| ステップ | 毎回の変化 | \`i++\` |
+
+### 文字列のインデックスでループ
+
+\`\`\`javascript
+const word = "hello";
+
+// 順番に出力
+for (let i = 0; i < word.length; i++) {
+  console.log(word[i]); // h, e, l, l, o
+}
+
+// 逆順に出力
+for (let i = word.length - 1; i >= 0; i--) {
+  console.log(word[i]); // o, l, l, e, h
+}
+\`\`\`
+
+### 合計を計算する
+
+\`\`\`javascript
+let totalSum = 0;
+
+for (let i = 1; i <= 5; i++) {
+  totalSum += i; // totalSum = totalSum + i
+}
+
+console.log(totalSum); // 15（1+2+3+4+5）
+\`\`\`
+
+### メモ：while と for の違い
+
+| 特徴 | while | for |
+|------|-------|-----|
+| インデックスの場所 | ループの外 | ループの中（自己完結） |
+| スコープ | 外からアクセス可能 | ループ内のみ |
+| 向いている場面 | 条件が動的なとき | 回数が決まっているとき |
+
+---
+
+## 10. モジュロ演算子（%）
+
+余りを取得する演算子。**偶数・奇数の判定**によく使う。
+
+\`\`\`javascript
+console.log(5 % 2); // 1（5÷2の余り）
+console.log(10 % 3); // 1（10÷3の余り）
+console.log(4 % 2); // 0（割り切れる = 偶数）
+\`\`\`
+
+### 偶数・奇数の判定
+
+\`\`\`javascript
+for (let i = 1; i <= 10; i++) {
+  if (i % 2 === 0) {
+    console.log(\`\${i} は偶数\`);
+  } else {
+    console.log(\`\${i} は奇数\`);
+  }
+}
+\`\`\`
+
+### より効率的な書き方（偶数だけ表示）
+
+\`\`\`javascript
+// ❶ if で条件チェック（10回ループ）
+for (let i = 1; i <= 10; i++) {
+  if (i % 2 === 0) console.log(i);
+}
+
+// ❷ ステップを2にする（5回ループ＝より効率的）
+for (let i = 2; i <= 10; i += 2) {
+  console.log(i); // 2, 4, 6, 8, 10
+}
+\`\`\`
+
+> **❷の方が処理が速い**。if 文がなく、ループ回数も半分。
+
+---
+
+## 11. ループの応用
+
+### 文字列の連結
+
+\`\`\`javascript
+let catMessage = "";
+
+for (let i = 0; i < 5; i++) {
+  catMessage += "meow "; // catMessage = catMessage + "meow "
+}
+
+console.log(catMessage); // "meow meow meow meow meow "
+\`\`\`
+
+> 累積変数は **ループの外で宣言**すること。中に置くと毎回リセットされる。
+
+### 特定の文字を検索する
+
+\`\`\`javascript
+const letters = "xqbrtabcdef";
+let isFound = false;
+let location = -1;
+
+for (let i = 0; i < letters.length; i++) {
+  if (letters[i].toLowerCase() === "b") {
+    isFound = true;
+    location = i;
+  }
+}
+
+console.log(isFound ? \`文字 'b' はインデックス \${location} にあります\` : "文字 'b' はありません");
+\`\`\`
+
+### ネストされたループ
+
+\`\`\`javascript
+for (let x = 0; x < 3; x++) {
+  for (let y = 0; y < 3; y++) {
+    console.log(\`x: \${x}, y: \${y}\`);
+  }
+}
+// 内側のループが全部終わってから、外側が次に進む
+\`\`\`
+
+---
+
+## 12. インクリメント・デクリメントまとめ
+
+| 書き方 | 意味 | 例 |
+|--------|------|----|
+| \`i++\` | 1増やす（後置） | \`i = 0 → 1\` |
+| \`++i\` | 1増やす（前置） | 同上（順序違い） |
+| \`i--\` | 1減らす | \`i = 5 → 4\` |
+| \`i += 2\` | 2増やす | \`i = 0 → 2 → 4…\` |
+| \`i -= 1\` | 1減らす | \`i -= 1 と i-- は同じ\` |
+| \`i *= 2\` | 2倍にする | \`i = 3 → 6\` |
+
+---
+
+## 🔑 今日のまとめ
+
+| トピック | 要点 |
+|----------|------|
+| **Truthy/Falsy** | 空文字・0・null・undefined・false は falsy。それ以外は truthy |
+| **=== を使う** | \`==\` は型を無視。\`===\` は型も含めて厳密比較 |
+| **論理演算子** | \`&&\`（AND）: 両方 true、\`\\|\\|\`（OR）: どちらか true、\`!\`（NOT）: 反転 |
+| **三項演算子** | 値をセットするだけなら \`条件 ? A : B\` が簡潔 |
+| **switch** | 一つの変数の値を複数パターンで比較。\`break\` を忘れずに |
+| **while** | 条件が true の間ループ。インクリメント忘れで無限ループ注意 |
+| **for** | 開始・条件・ステップが自己完結。回数が決まっているとき最適 |
+| **%（モジュロ）** | 余りを取得。\`i % 2 === 0\` で偶数判定 |
+
+---
+
+## 📝 今週の課題
+
+- **演習1〜14** を完了する（演習3は除く → 1, 2, 4〜14）
+- 今日中〜明日でできる分をやり、残りは週末に
+- 来週にも新しい演習セットが来る予定
+- テスト方法：ターミナルで \`node exercises/ex01.js\` など
+`
+
 };
 
 // ── カードデータ ──────────────────────────────
@@ -1353,6 +2926,10 @@ const cardMeta = {
   "0514": { date: "5/14（木）", title: "Git応用 ／ 履歴・復元・設定ファイル", color: "w2" },
   "0519": { date: "5/19（火）", title: "JavaScript入門 ／ 問題解決・アルゴリズム", color: "w3" },
   "0520": { date: "5/20（水）", title: "JavaScript基礎 ／ 変数・スコープ・演算子・データ型", color: "w3" },
+  "0521": { date: "5/21（木）", title: "JavaScript ／ 条件分岐・ループ・三項演算子", color: "w3" },
+  "0522": { date: "5/22（金）", title: "JavaScript ／ 関数の種類・コールバック・ホイスティング・文字列メソッド", color: "w3" },
+  "0525": { date: "5/25（月）", title: "JavaScript ／ 配列・オブジェクト・メソッド・this", color: "w3" },
+  "0526": { date: "5/26（火）", title: "ES6 ／ 高階関数（map・filter・forEach・reduce）", color: "w3" },
 };
 
 // ── モーダル ──────────────────────────────────
@@ -1407,15 +2984,12 @@ function applyFilters() {
     const matchWeek   = currentWeek === "all" || week === currentWeek;
     card.dataset.hidden = !(matchSearch && matchWeek);
   });
-  const visible = document.querySelectorAll(".card:not([data-hidden='true'])").length;
-  countEl.textContent = visible + " 件";
-  let noEl = document.querySelector(".no-results");
-  if (visible === 0) {
-    if (!noEl) { noEl = document.createElement("p"); noEl.className = "no-results"; noEl.textContent = "該当する議事録が見つかりませんでした"; document.getElementById("grid").appendChild(noEl); }
-  } else if (noEl) noEl.remove();
+  const visible = [...cards].filter(c => c.dataset.hidden !== "true");
+  countEl.textContent = visible.length + " 件";
 }
 
 searchInput.addEventListener("input", applyFilters);
+
 filterBtns.forEach(btn => {
   btn.addEventListener("click", () => {
     filterBtns.forEach(b => b.classList.remove("active"));
@@ -1424,6 +2998,7 @@ filterBtns.forEach(btn => {
     applyFilters();
   });
 });
+
 applyFilters();
 </script>
 </body>
