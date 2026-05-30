@@ -245,6 +245,36 @@ header p { margin-top: 4px; font-size: 12px; color: #888; }
       <span class="tag">分割代入</span><span class="tag">参照渡しの罠</span><span class="tag">HOFチェーン</span>
     </div>
   </div>
+
+  <div class="card" data-week="3" data-id="0527"
+    data-keywords="sort find reverse includes some every indexof join 配列 メソッド 昇順 降順 比較関数 comparator localecompare 文字列 ソート 検索 index">
+    <div class="card-top">
+      <span class="date-badge w3">5/27（水）</span>
+      <span class="week-badge">第3週</span>
+    </div>
+    <h2>ES6 ／ 配列メソッド Part 2（sort・find・reverse・includes・some・every・indexOf・join）</h2>
+    <p class="desc">デフォルトsortの罠・比較関数（a-b）・localeCompare・find vs filter・some/every の違い・includes・indexOf・join。</p>
+    <div class="tags">
+      <span class="tag">sort / comparator</span><span class="tag">find</span><span class="tag">reverse</span>
+      <span class="tag">some / every</span><span class="tag">includes / indexOf</span><span class="tag">join</span>
+    </div>
+  </div>
+
+
+  <div class="card" data-week="3" data-id="0528"
+    data-keywords="rest spread set クロージャ closure 再帰 recursion 階乗 factorial fibonacci tostring parseint tofixed tosorted toreversed slice splice concat split immutability イミュータブル ミューテーション">
+    <div class="card-top">
+      <span class="date-badge w3">5/28（木）</span>
+      <span class="week-badge">第3週</span>
+    </div>
+    <h2>ES6 Part 3 ／ rest・spread・Set・クロージャ・再帰・追加メソッド</h2>
+    <p class="desc">rest パラメータ・スプレッド演算子（コピー/マージ/更新）・Set・クロージャ（カウンター/ToDoリスト）・再帰（factorial/Fibonacci）・toString/parseInt/toFixed・toSorted/toReversed/slice/splice/concat/split。</p>
+    <div class="tags">
+      <span class="tag">rest / spread</span><span class="tag">Set</span><span class="tag">クロージャ</span>
+      <span class="tag">再帰</span><span class="tag">toSorted / toReversed</span><span class="tag">slice / splice</span>
+    </div>
+  </div>
+
 </div>
 
 <div class="overlay" id="overlay"></div>
@@ -2915,6 +2945,882 @@ for (let x = 0; x < 3; x++) {
 - テスト方法：ターミナルで \`node exercises/ex01.js\` など
 `
 
+,
+"0527": `# Web Development 授業議事録
+## 2026年5月27日（水）
+
+---
+
+## 📋 授業の概要
+
+| 項目 | 内容 |
+|------|------|
+| **テーマ** | ES6 ／ 配列メソッド Part 2（sort・find・reverse・includes・some・every・indexOf・join） |
+| **スライド** | W2D3 – ES6 and Modern JS Part 2 |
+
+---
+
+## 1. sort()
+
+### デフォルトの sort は危険
+
+\`\`\`javascript
+const numbers = [2, 3, 1, 5, 4];
+console.log(numbers.sort()); // [1, 2, 3, 4, 5] ← 一見OK
+\`\`\`
+
+ところが多桁の数字が混ざると壊れる：
+
+\`\`\`javascript
+const numbers = [2, 3, 1, 5, 4, 22, 15];
+console.log(numbers.sort()); // [1, 15, 2, 22, 3, 4, 5] ← 壊れてる！
+\`\`\`
+
+> **理由：** デフォルトの \`sort()\` は要素を**文字列に変換**してから比較する。  
+> \`"15"\` は \`"2"\` より小さい（"1" < "2"）ので先に来る。
+
+---
+
+### 比較関数（Comparator Function）を使う
+
+\`sort()\` に関数を渡すと正しく動く。ルールは：
+
+| 戻り値 | 動作 |
+|--------|------|
+| **正の数（+）** | A と B を**入れ替える** |
+| **負の数（−）** | 入れ替えない（そのまま） |
+| **0** | 何もしない |
+
+#### 昇順（小→大）
+
+\`\`\`javascript
+const numbers = [2, 3, 1, 5, 4, 22, 15, 36];
+
+// 丁寧な書き方
+const sortAscending = (a, b) => {
+  if (a > b) return 1;   // swap
+  else return -1;        // don't swap
+};
+
+// 簡略版（推奨）
+const sorted = numbers.sort((a, b) => a - b);
+console.log(sorted); // [1, 2, 3, 4, 5, 15, 22, 36]
+\`\`\`
+
+**なぜ \`a - b\` で動くのか？**  
+\`a = 2, b = 15\` → \`2 - 15 = -13\`（負）→ 入れ替えない  
+\`a = 15, b = 3\` → \`15 - 3 = +12\`（正）→ 入れ替える  
+差が正 or 負かだけを利用している。
+
+#### 降順（大→小）
+
+\`\`\`javascript
+const sortedDesc = numbers.sort((a, b) => b - a);
+console.log(sortedDesc); // [36, 22, 15, 5, 4, 3, 2, 1]
+\`\`\`
+
+---
+
+### オブジェクトの配列をソート
+
+\`\`\`javascript
+const products = [
+  { name: "iPhone",     price: 899 },
+  { name: "MacBook",    price: 1599 },
+  { name: "Apple Watch", price: 399 },
+];
+
+// 価格の昇順
+const sortedByPrice = products.sort((a, b) => a.price - b.price);
+// Apple Watch(399) → iPhone(899) → MacBook(1599)
+
+// 価格の降順
+const sortedByPriceDesc = products.sort((a, b) => b.price - a.price);
+\`\`\`
+
+---
+
+### 文字列のソート — \`localeCompare()\` を使う
+
+\`\`\`javascript
+const fruits = ["Mango", "apple", "banana", "Orange"];
+
+// ❌ a - b は文字列に使えない
+// ✅ localeCompare を使う（大文字・小文字を無視してくれる）
+const sorted = fruits.sort((a, b) => a.localeCompare(b));
+console.log(sorted); // ["apple", "banana", "Mango", "Orange"]
+
+// 降順
+const sortedDesc = fruits.sort((a, b) => b.localeCompare(a));
+\`\`\`
+
+> ⚠️ 大文字は ASCII 値が低いので、\`"Mango"\` < \`"apple"\` になる。  
+> \`localeCompare()\` を使えば大文字・小文字を無視して正しく並べ替えできる。
+
+#### オブジェクトの文字列プロパティでソート
+
+\`\`\`javascript
+const sortedByName = products.sort((a, b) => a.name.localeCompare(b.name));
+// Apple Watch → iPhone → MacBook
+\`\`\`
+
+---
+
+## 2. find()
+
+配列の中で**条件に一致する最初の要素を1つだけ**返す。
+
+\`\`\`javascript
+const numbers = [1, 2, 3, 4, 5, 3, 7];
+
+const result = numbers.find(num => num > 3);
+console.log(result); // 4 （4, 5, 7 があるが最初の 4 だけ返す）
+\`\`\`
+
+### filter との違い
+
+| メソッド | 戻り値 | 動作 |
+|----------|--------|------|
+| \`filter\` | **配列**（マッチした全要素） | 最後まで走査する |
+| \`find\` | **要素1つ**（最初のマッチ） | 見つかった瞬間に停止 |
+
+\`\`\`javascript
+const students = [
+  { name: "John", enrolled: true },
+  { name: "Jane", enrolled: false },
+  { name: "Joe",  enrolled: true },
+];
+
+const firstEnrolled = students.find(s => s.enrolled === true);
+console.log(firstEnrolled); // { name: "John", enrolled: true }
+
+// filter なら全員返る（配列）
+const allEnrolled = students.filter(s => s.enrolled === true);
+// [{ name: "John" ... }, { name: "Joe" ... }]
+\`\`\`
+
+### find が速い理由
+
+\`\`\`javascript
+// 100万ユーザーから特定のメールを探す場合
+const user = users.find(u => u.email === "john@mail.com");
+// → 50,000番目で見つかればそこで停止！残り950,000件はスキャンしない
+\`\`\`
+
+\`filter\` は一致しても全件走査し続けるので、一意な要素（メール・ID）を探すときは \`find\` が断然速い。
+
+### マッチしない場合
+
+\`\`\`javascript
+const notFound = numbers.find(num => num > 100);
+console.log(notFound); // undefined
+\`\`\`
+
+---
+
+## 3. reverse()
+
+配列の順序を**単純に逆にする**。
+
+\`\`\`javascript
+const numbers = [1, 2, 3, 4, 5];
+console.log(numbers.reverse()); // [5, 4, 3, 2, 1]
+
+const fruits = ["apple", "orange", "banana"];
+console.log(fruits.reverse()); // ["banana", "orange", "apple"]
+\`\`\`
+
+> **sort の降順とは違う！**  
+> \`reverse()\` は現在の順序をそのまま反転させるだけ。  
+> \`[10, 1, 3]\` を \`reverse()\` すると \`[3, 1, 10]\`（数値の大小ではなく位置が逆）。
+
+---
+
+## 4. includes()
+
+配列に**指定した値が存在するか**を \`true\` / \`false\` で返す。
+
+\`\`\`javascript
+const fruits = ["apple", "banana", "mango"];
+
+console.log(fruits.includes("banana")); // true
+console.log(fruits.includes("orange")); // false
+
+const numbers = [1, 2, 3, 4, 5];
+console.log(numbers.includes(3)); // true
+console.log(numbers.includes(9)); // false
+\`\`\`
+
+---
+
+## 5. some()
+
+配列の要素のうち**1つでも条件を満たせば** \`true\` を返す。
+
+\`\`\`javascript
+const numbers = [1, 2, 3, 4, 5];
+
+const hasEven = numbers.some(n => n % 2 === 0);
+console.log(hasEven); // true（2 や 4 が偶数）
+
+const allOver10 = numbers.some(n => n > 10);
+console.log(allOver10); // false（全部10以下）
+\`\`\`
+
+---
+
+## 6. every()
+
+配列の**全要素が条件を満たしたとき**だけ \`true\` を返す。
+
+\`\`\`javascript
+const numbers = [2, 4, 6, 8];
+
+const allEven = numbers.every(n => n % 2 === 0);
+console.log(allEven); // true（全部偶数）
+
+const numbers2 = [2, 4, 5, 8];
+const allEven2 = numbers2.every(n => n % 2 === 0);
+console.log(allEven2); // false（5 が奇数）
+\`\`\`
+
+### some と every の比較
+
+| メソッド | true になる条件 |
+|----------|----------------|
+| \`some\`   | **1つでも**条件を満たす |
+| \`every\`  | **全員が**条件を満たす |
+
+---
+
+## 7. indexOf()
+
+配列の中で**指定した要素のインデックス**を返す。存在しない場合は \`-1\`。
+
+\`\`\`javascript
+const fruits = ["apple", "banana", "mango", "banana"];
+
+console.log(fruits.indexOf("banana")); // 1（最初に見つかった位置）
+console.log(fruits.indexOf("orange")); // -1（存在しない）
+\`\`\`
+
+---
+
+## 8. join()
+
+配列の要素を結合して**1つの文字列**にする。
+
+\`\`\`javascript
+const words = ["Hello", "World", "from", "JS"];
+
+console.log(words.join(" "));  // "Hello World from JS"
+console.log(words.join(", ")); // "Hello, World, from, JS"
+console.log(words.join(""));   // "HelloWorldfromJS"
+console.log(words.join("-"));  // "Hello-World-from-JS"
+\`\`\`
+
+> 引数に区切り文字を指定する。省略すると \`,\`（カンマ）になる。
+
+---
+
+## 🔑 メソッドまとめ表
+
+| メソッド | 戻り値 | 主な用途 |
+|----------|--------|----------|
+| \`sort((a,b) => a-b)\` | 配列（同じ参照） | 数値昇順ソート |
+| \`sort((a,b) => b-a)\` | 配列 | 数値降順ソート |
+| \`sort((a,b) => a.localeCompare(b))\` | 配列 | 文字列アルファベット順 |
+| \`find(条件)\` | 要素1つ or \`undefined\` | 最初の一致を高速検索 |
+| \`reverse()\` | 配列 | 順序を逆にする |
+| \`includes(値)\` | \`true\` / \`false\` | 値の存在確認 |
+| \`some(条件)\` | \`true\` / \`false\` | 1つでも条件を満たすか |
+| \`every(条件)\` | \`true\` / \`false\` | 全員が条件を満たすか |
+| \`indexOf(値)\` | 数値（インデックス）or \`-1\` | 要素の位置を取得 |
+| \`join(区切り文字)\` | 文字列 | 配列を文字列に結合 |
+
+---
+
+## 📝 今日の課題
+
+- **演習8問** — GitHub Classroom より
+- \`https://classroom.github.com/a/8_qNSAqS\`
+- 今日学んだ8つのメソッドを使って解く
+`
+
+,
+"0528": `# Web Development 授業議事録
+## 2026年5月28日（木）
+
+---
+
+## 📋 授業の概要
+
+| 項目 | 内容 |
+|------|------|
+| **テーマ** | ES6 Part 3 — rest/spread・Set・クロージャ・再帰・追加メソッド群 |
+| **スライド** | W2D4 – ES6 and Modern JS Part 3 |
+
+---
+
+## 1. Rest パラメータ（\`...\`）
+
+**関数に渡される引数の残り全部を配列としてキャプチャする**。
+
+\`\`\`javascript
+function addAll(...numbers) {
+  let sum = 0;
+  for (const num of numbers) {
+    sum += num;
+  }
+  return sum;
+}
+
+console.log(addAll(2, 5));          // 7
+console.log(addAll(3, 4, 10));      // 17
+console.log(addAll(6));             // 6
+
+// reduce で書き換えも可能
+const addAll = (...numbers) => numbers.reduce((total, n) => total + n, 0);
+\`\`\`
+
+### 通常のパラメータと組み合わせる
+
+\`\`\`javascript
+function introduce(firstName, lastName, ...hobbies) {
+  return \`Hello, my name is \${firstName} \${lastName}. I love \${hobbies.join(", ")}.\`;
+}
+
+console.log(introduce("John", "Smith", "skydiving", "mining", "scuba diving"));
+// Hello, my name is John Smith. I love skydiving, mining, scuba diving.
+\`\`\`
+
+### ルール
+
+| ルール | 説明 |
+|--------|------|
+| **1つだけ** | rest パラメータは関数に1つしか使えない |
+| **最後に置く** | 他のパラメータの後に必ず置く |
+| **常に配列になる** | 引数が1つでも配列として受け取る |
+
+\`\`\`javascript
+// ❌ NG: rest が中間にある
+function bad(firstName, ...hobbies, lastName) {} // エラー
+
+// ✅ OK: rest は末尾
+function good(firstName, lastName, ...hobbies) {}
+\`\`\`
+
+---
+
+## 2. スプレッド演算子（\`...\`）
+
+\`...\` を**引数以外の場所**（配列・オブジェクトの中）で使うとスプレッド演算子になる。
+
+### 配列のコピー・結合
+
+\`\`\`javascript
+const numbersA = [1, 2, 3];
+const numbersB = [4, 5, 6];
+
+// ❌ これは文字列の連結になる
+const wrong = numbersA + numbersB; // "1,2,34,5,6"
+
+// ✅ スプレッドで正しく結合
+const combined = [...numbersA, ...numbersB]; // [1, 2, 3, 4, 5, 6]
+
+// 順番を変えれば並び替えも可能
+const reversed = [...numbersB, ...numbersA]; // [4, 5, 6, 1, 2, 3]
+
+// 途中に値を追加
+const withExtra = [100, ...numbersA, 200, ...numbersB, 300];
+// [100, 1, 2, 3, 200, 4, 5, 6, 300]
+\`\`\`
+
+### 配列の本当のコピー（参照コピーを防ぐ）
+
+\`\`\`javascript
+const original = [2, 4, 6];
+
+// ❌ これは参照（同じ配列を指している）
+const ref = original;
+ref.push(8); // original も変わってしまう！
+
+// ✅ スプレッドで独立したコピー
+const copy = [...original];
+copy.push(8); // original は変わらない
+\`\`\`
+
+### 要素追加（push の代わり）
+
+\`\`\`javascript
+const fruits = ["apple", "banana", "orange"];
+
+// push は元の配列を変更（ミューテーション）
+fruits.push("mango");
+
+// スプレッドで新しい配列を作る（元を保護）
+const newFruits = [...fruits, "mango"];
+\`\`\`
+
+### オブジェクトのコピー・マージ・上書き
+
+\`\`\`javascript
+const studentTemplate = { college: "CICCC", address: "Burnaby" };
+
+const studentA = { name: "Emi",  age: 25, ...studentTemplate };
+const studentB = { name: "Kazi", age: 22, ...studentTemplate };
+
+// 特定のプロパティだけ上書き（スプレッドを先に書くのがルール）
+const studentC = { ...studentTemplate, address: "Richmond" };
+// { college: "CICCC", address: "Richmond" }
+\`\`\`
+
+> ⚠️ **スプレッドは先に書く**。同じプロパティ名は後に書いた方が上書きされる。
+
+### オブジェクト配列の更新（map + spread の組み合わせ）
+
+\`\`\`javascript
+const employees = [
+  { id: 1, name: "John", isEmployed: false },
+  { id: 2, name: "Jane", isEmployed: false },
+  { id: 3, name: "Joe",  isEmployed: false },
+];
+
+const getHired = (employees, id) =>
+  employees.map(emp =>
+    emp.id === id
+      ? { ...emp, isEmployed: true }  // 対象だけ上書き
+      : emp                           // 他はそのまま返す
+  );
+
+console.log(getHired(employees, 2));
+// Jane だけ isEmployed: true になる
+\`\`\`
+
+---
+
+## 3. 関数のベストプラクティス
+
+- 関数名は**動詞ベース**の camelCase（例: \`findCamelCasedNames\`）
+- **1つの関数 = 1つの責務**。複数の処理をまとめない
+- グローバル変数を関数内から直接読まない → 必要なら引数で渡す
+
+\`\`\`javascript
+// ❌ Bad: グローバル変数を直接読んでいる
+let message = "Hello";
+function greet() {
+  console.log(message); // 関数を移植したら壊れる
+}
+
+// ✅ Good: 引数で渡す
+function greet(message) {
+  console.log(message);
+}
+\`\`\`
+
+---
+
+## 4. Set（セット）
+
+**重複のない値のコレクション**。配列から重複を除くのによく使う。
+
+\`\`\`javascript
+const numbers = [1, 3, 5, 3, 7, 6, 8, 5];
+
+// ❌ 従来のやり方（長い）
+const uniqueArr = [];
+for (const num of numbers) {
+  if (!uniqueArr.includes(num)) uniqueArr.push(num);
+}
+
+// ✅ Set を使う
+const uniqueSet = new Set(numbers);       // Set {1, 3, 5, 7, 6, 8}
+const uniqueArray = [...uniqueSet];       // [1, 3, 5, 7, 6, 8]
+
+// 1行でまとめる
+const unique = [...new Set(numbers)];
+\`\`\`
+
+### Set のメソッド
+
+| メソッド | 説明 |
+|----------|------|
+| \`set.add(値)\` | 要素を追加（同じ値は無視される） |
+| \`set.delete(値)\` | 指定した要素を削除 |
+| \`set.clear()\` | 全要素を削除 |
+| \`set.has(値)\` | 存在確認（true / false） |
+| \`set.size\` | 要素数 |
+
+\`\`\`javascript
+const names = new Set(["John", "Jane", "Joe"]);
+
+names.add("Jack");      // { John, Jane, Joe, Jack }
+names.delete("Jane");   // { John, Joe, Jack }
+names.has("John");      // true
+names.has("Jane");      // false
+names.size;             // 3
+names.clear();          // Set {}
+\`\`\`
+
+> ⚠️ Set は配列ではないので \`push\` / \`pop\` / \`includes\` は使えない。  
+> インデックス（\`[0]\`）もない。繰り返しには \`for...of\` か \`forEach\` を使う。
+
+---
+
+## 5. クロージャ（Closure）
+
+**関数が、自分を作ったスコープの変数を「記憶」する仕組み**。  
+関数の中で関数を返すと、外の変数がリセットされずに保持される。
+
+### 基本例：乗算器
+
+\`\`\`javascript
+function multiplier(factor) {
+  return (num) => num * factor;
+}
+
+const double = multiplier(2);  // factor = 2 を記憶した関数
+const triple = multiplier(3);  // factor = 3 を記憶した関数
+
+console.log(double(5));  // 10 (5 × 2)
+console.log(triple(5));  // 15 (5 × 3)
+console.log(double(10)); // 20 (10 × 2)
+
+// アロー関数で書き直し
+const multiplier = factor => num => num * factor;
+\`\`\`
+
+### カウンター（メソッドを返すパターン）
+
+\`\`\`javascript
+function counter() {
+  let count = 0;  // この変数が「記憶」される
+
+  return {
+    increment() { count++; },
+    decrement() { count--; },
+    add(n)      { count += n; },
+    display()   { return count; },
+  };
+}
+
+const myCoolCounter = counter();
+myCoolCounter.increment();   // 1
+myCoolCounter.increment();   // 2
+myCoolCounter.add(5);        // 7
+myCoolCounter.decrement();   // 6
+console.log(myCoolCounter.display()); // 6
+
+// 別のカウンターは独立している
+const myBoringCounter = counter(); // count は 0 からリスタート
+myBoringCounter.add(4);     // 4
+\`\`\`
+
+### To-Do リスト（実用例）
+
+\`\`\`javascript
+function todoList() {
+  let todos = [];
+
+  return {
+    add(task)    { todos.push(task); },
+    display()    { return todos; },
+    clearList()  { todos = []; },
+  };
+}
+
+const shoppingList = todoList();
+shoppingList.add("Buy coffee");
+shoppingList.add("Buy burger");
+console.log(shoppingList.display()); // ["Buy coffee", "Buy burger"]
+
+const choresList = todoList(); // 別の独立したリスト
+choresList.add("Wash laundry");
+\`\`\`
+
+### ポイント
+
+- 関数の中で変数を**使っている関数を返す**と、その変数はリセットされない
+- 同じ関数を複数回呼ぶと、それぞれ独立したクロージャが作られる
+- \`counter()\` を再度呼ぶと count がリセットされる
+
+---
+
+## 6. 再帰（Recursion）
+
+**関数が自分自身を呼ぶ**ことで、ループと同じ繰り返し処理を実現する。
+
+### 基本構造
+
+\`\`\`javascript
+function countToFive(start) {
+  if (start > 5) return; // 終了条件（必須）
+  console.log(start);
+  countToFive(start + 1); // 自分を呼ぶ（値を変える）
+}
+countToFive(1); // 1, 2, 3, 4, 5
+\`\`\`
+
+> ⚠️ 終了条件と値の変化を忘れると**無限ループ**になる（Maximum call stack size exceeded）。
+
+### 階乗（Factorial）
+
+\`\`\`javascript
+// n! = n × (n-1) × (n-2) × ... × 1
+function factorial(num) {
+  if (num <= 1) return 1;          // num が 1 になったら終了
+  return num * factorial(num - 1); // 自分を呼ぶ
+}
+
+console.log(factorial(3)); // 6   (3×2×1)
+console.log(factorial(5)); // 120 (5×4×3×2×1)
+
+// アロー関数
+const factorial = num => num <= 1 ? 1 : num * factorial(num - 1);
+\`\`\`
+
+### フィボナッチ数列
+
+\`\`\`javascript
+// 0, 1, 1, 2, 3, 5, 8, 13, 21 ... (前の2つを足す)
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 2) + fibonacci(n - 1);
+}
+
+console.log(fibonacci(5)); // 5
+console.log(fibonacci(7)); // 13
+\`\`\`
+
+### 文字列の逆順
+
+\`\`\`javascript
+function reverseString(word) {
+  if (word === "") return "";
+  return reverseString(word.slice(1)) + word[0];
+}
+
+console.log(reverseString("hello")); // "olleh"
+\`\`\`
+
+### for ループ vs 再帰
+
+| 特徴 | for ループ | 再帰 |
+|------|-----------|------|
+| 速度 | 普通 | 少し速い |
+| メモリ | 少ない | コールスタックを積む |
+| 読みやすさ | 直感的 | 慣れるまで難しい |
+| 使い道 | 一般的な繰り返し | 最適化・面接問題 |
+
+---
+
+## 7. オブジェクトのメソッドと \`this\`
+
+\`\`\`javascript
+const person = {
+  firstName: "John",
+  lastName: "Smith",
+  // 関数宣言 → this が使える ✅
+  greet: function() {
+    return \`Hello, I'm \${this.firstName} \${this.lastName}\`;
+  },
+  // アロー関数 → this が使えない ❌
+  greetArrow: () => {
+    return \`Hello, I'm \${this.firstName}\`; // undefined になる
+  },
+};
+\`\`\`
+
+> **メソッドには関数宣言（\`function\`）を使う。アロー関数では \`this\` が動かない。**
+
+---
+
+## 8. 追加メソッド
+
+### toString()
+
+あらゆるデータ型を文字列に変換する。
+
+\`\`\`javascript
+const nums = [1, 2, 3];
+console.log(nums.toString()); // "1,2,3"
+
+const age = 25;
+console.log(age.toString());  // "25"
+
+// 新しい書き方
+console.log(String(age));     // "25"（同じ結果）
+\`\`\`
+
+### parseInt() / Number()
+
+\`\`\`javascript
+const yearStr = "2026";
+
+console.log(parseInt(yearStr)); // 2026（整数のみ、小数は切り捨て）
+console.log(Number(yearStr));   // 2026（小数も対応 ← 推奨）
+
+const price = "349.99";
+console.log(parseInt(price));   // 349（小数が消える）
+console.log(Number(price));     // 349.99 ✅
+\`\`\`
+
+### toFixed() と parseFloat()
+
+小数点以下の桁数を指定するときに使う（戻り値は文字列）。
+
+\`\`\`javascript
+const total = 2789.4912;
+const cleaned = Number(parseFloat(total).toFixed(2)); // 2789.49
+
+// 関数化しておくと便利
+const formatPrice = price => Number(parseFloat(price).toFixed(2));
+console.log(formatPrice(2789.4912)); // 2789.49
+\`\`\`
+
+---
+
+## 9. 新しいメソッド（ES2023）— 元の配列を変えない版
+
+### toSorted()
+
+\`\`\`javascript
+const nums = [3, 1, 4, 1, 5];
+
+// sort() は元の配列を変える（ミューテーション）
+const sortedRef = nums.sort((a, b) => a - b); // nums が壊れる
+
+// toSorted() は新しい配列を返す（元を保護）
+const sorted = nums.toSorted((a, b) => a - b);
+console.log(nums);   // [3, 1, 4, 1, 5] ← 変わっていない
+console.log(sorted); // [1, 1, 3, 4, 5]
+\`\`\`
+
+### toReversed()
+
+\`\`\`javascript
+const nums = [1, 2, 3, 4, 5];
+
+const reversed = nums.toReversed();
+console.log(nums);     // [1, 2, 3, 4, 5] ← 変わっていない
+console.log(reversed); // [5, 4, 3, 2, 1]
+\`\`\`
+
+### toSpliced()
+
+\`\`\`javascript
+const nums = [1, 2, 3, 4, 5];
+
+// splice() は元の配列を変える
+const toSpliced = nums.toSpliced(1, 2); // index1から2個除いた新配列
+console.log(nums);       // [1, 2, 3, 4, 5] ← 変わっていない
+console.log(toSpliced);  // [1, 4, 5]
+\`\`\`
+
+---
+
+## 10. slice() と splice()
+
+### slice() — 範囲を切り出す（元の配列を変えない）
+
+\`\`\`javascript
+const fruits = ["apple", "banana", "orange", "mango", "grapes"];
+//                  0         1        2         3        4
+
+const sliced = fruits.slice(1, 3); // index 1 から index 3 の手前まで
+console.log(sliced); // ["banana", "orange"]
+console.log(fruits); // 変わっていない
+
+// 開始だけ指定 → そこから末尾まで
+const rest = fruits.slice(2); // ["orange", "mango", "grapes"]
+\`\`\`
+
+> ⚠️ 第2引数は「そのインデックスの手前まで」。\`slice(1, 3)\` は index 1 と 2 だけ（3 は含まない）。
+
+### splice() — 要素を追加・削除する（元の配列を変える）
+
+\`\`\`javascript
+const fruits = ["apple", "banana", "orange", "mango"];
+
+// splice(開始index, 削除数, ...追加する要素)
+const removed = fruits.splice(1, 2); // index1 から 2個削除
+console.log(removed); // ["banana", "orange"]
+console.log(fruits);  // ["apple", "mango"] ← 変更された
+\`\`\`
+
+---
+
+## 11. concat()
+
+配列や文字列を結合する（古い書き方）。
+
+\`\`\`javascript
+const a = [1, 2, 3];
+const b = [4, 5, 6];
+
+// concat（古い）
+console.log(a.concat(b)); // [1, 2, 3, 4, 5, 6]
+
+// スプレッド（新しい・推奨）
+console.log([...a, ...b]); // [1, 2, 3, 4, 5, 6]
+
+// 文字列
+const str1 = "Hello";
+const str2 = "World";
+console.log(str1.concat(" ", str2)); // "Hello World"
+// テンプレートリテラルの方が読みやすい
+console.log(\`\${str1} \${str2}\`);      // "Hello World"
+\`\`\`
+
+---
+
+## 12. split()
+
+文字列を分割して配列にする（\`join()\` の逆）。
+
+\`\`\`javascript
+const sentence = "Hello World Again";
+
+// スペースで分割
+console.log(sentence.split(" ")); // ["Hello", "World", "Again"]
+
+// 1文字ずつ分割
+console.log(sentence.split("")); // ["H","e","l","l","o"," ","W",...]
+
+// 活用例: 特定の文字を除いた文字列を作る
+const cleaned = "remove=equal=science".split("=").join(" ");
+console.log(cleaned); // "remove equal science"
+\`\`\`
+
+---
+
+## 🔑 ミューテーション vs 非ミューテーション まとめ
+
+| メソッド | 元配列を変える？ | 新配列を返す？ |
+|----------|----------------|---------------|
+| \`sort()\` | ✅ 変える | — |
+| \`toSorted()\` | ❌ 変えない | ✅ 新配列 |
+| \`reverse()\` | ✅ 変える | — |
+| \`toReversed()\` | ❌ 変えない | ✅ 新配列 |
+| \`splice()\` | ✅ 変える | 削除した要素を返す |
+| \`toSpliced()\` | ❌ 変えない | ✅ 新配列 |
+| \`slice()\` | ❌ 変えない | ✅ 新配列 |
+| \`push() / pop()\` | ✅ 変える | — |
+| \`map() / filter()\` | ❌ 変えない | ✅ 新配列 |
+
+> **React などのフレームワークでは元の配列を変えない（Immutability）のが原則。**  
+> \`toSorted\` / \`toReversed\` / スプレッド / \`map\` / \`filter\` を使うようにしていこう。
+
+---
+
+## 📝 今日の課題
+
+- **Week 2 演習の残り（演習9以降）** に取り組む
+- 明日（5/29）はラボ（筆記テスト）。ノートと自分のコードを参照してOK
+- Week 1 の演習締め切り：5月31日
+- Week 2 の演習締め切り：来週（6月第1週）
+`
+
 };
 
 // ── カードデータ ──────────────────────────────
@@ -2930,6 +3836,8 @@ const cardMeta = {
   "0522": { date: "5/22（金）", title: "JavaScript ／ 関数の種類・コールバック・ホイスティング・文字列メソッド", color: "w3" },
   "0525": { date: "5/25（月）", title: "JavaScript ／ 配列・オブジェクト・メソッド・this", color: "w3" },
   "0526": { date: "5/26（火）", title: "ES6 ／ 高階関数（map・filter・forEach・reduce）", color: "w3" },
+  "0527": { date: "5/27（水）", title: "ES6 ／ 配列メソッド Part 2（sort・find・reverse・includes・some・every・indexOf・join）", color: "w3" },
+  "0528": { date: "5/28（木）", title: "ES6 Part 3 ／ rest・spread・Set・クロージャ・再帰・追加メソッド", color: "w3" },
 };
 
 // ── モーダル ──────────────────────────────────
